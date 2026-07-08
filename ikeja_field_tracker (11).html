@@ -1,0 +1,3136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IE Field Tracker — Ikeja Electric</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --green:#00843D;--green-dark:#005A29;--green-light:#E6F4EC;
+  --amber:#E8A000;--amber-light:#FFF8E6;
+  --red:#C0392B;--red-light:#FDECEA;
+  --blue:#1A5CA8;--blue-light:#EBF2FB;
+  --purple:#7C3AED;--purple-light:#F3E8FF;
+  --bg:#F5F6F7;--surface:#FFF;--border:#DEE2E6;
+  --text:#1A1F2E;--muted:#6B7280;--faint:#9CA3AF;
+  --r:8px;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shm:0 4px 16px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+header{background:var(--green);color:#fff;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,82,38,.35)}
+.hlogo{width:36px;height:36px;background:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--green);font-size:12px;flex-shrink:0}
+.htitle{font-weight:700;font-size:15px}.hsub{font-size:11px;opacity:.75}
+.hright{display:flex;align-items:center;gap:14px}
+.hdate{font-size:12px;opacity:.8;font-family:'IBM Plex Mono',monospace}
+.role-select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 10px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;max-width:240px}
+.role-select option{color:var(--text);background:#fff}
+.role-banner{padding:7px 24px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border)}
+.rb-um{background:var(--purple-light);color:var(--purple)}
+.rb-mgr{background:var(--blue-light);color:var(--blue)}
+.rb-sup{background:var(--amber-light);color:#7A5500}
+.rb-field{background:var(--green-light);color:var(--green-dark)}
+.tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 24px;overflow-x:auto}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.15s;user-select:none;white-space:nowrap}
+.tab:hover{color:var(--green)}.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.container{max-width:1320px;margin:0 auto;padding:24px}
+.page{display:none}.page.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh)}
+.ch{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ct{font-weight:600;font-size:14px}.cb{padding:20px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;box-shadow:var(--sh)}
+.sl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sv{font-size:28px;font-weight:700;margin:4px 0 2px;font-family:'IBM Plex Mono',monospace}
+.ss{font-size:11px;color:var(--muted)}
+.sg .sv{color:var(--green)}.sa .sv{color:var(--amber)}.sb .sv{color:var(--blue)}.sr .sv{color:var(--red)}
+label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:#fff;transition:border-color .15s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,132,61,.1)}
+input.err,select.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,.12)}
+textarea{resize:vertical;min-height:68px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.fg{margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:.15s}
+.bp{background:var(--green);color:#fff}.bp:hover{background:var(--green-dark)}
+.bp:disabled{background:#9CA3AF;cursor:not-allowed}
+.bs{background:#fff;color:var(--text);border:1px solid var(--border)}.bs:hover{background:var(--bg)}
+.bd{background:var(--red);color:#fff}.bd:hover{background:#922b21}
+.bb{background:var(--blue);color:#fff}.bb:hover{background:#144a89}
+.bpurple{background:var(--purple);color:#fff}.bpurple:hover{background:#6020c4}
+.bsm{padding:5px 10px;font-size:12px}.bfull{width:100%;justify-content:center}
+.ac-wrap{position:relative}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;max-height:220px;overflow-y:auto;z-index:60;box-shadow:var(--shm);display:none}
+.ac-list.open{display:block}
+.ac-item{padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #F1F3F5;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ac-item:hover,.ac-item.hi{background:var(--green-light)}
+.ac-item.already{background:#fafafa;cursor:default}
+.loc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:24px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green-dark);padding:3px 8px;border-radius:20px;font-size:12px;font-weight:500}
+.chip-warn{background:var(--amber-light);color:#7A5500}
+.chip-x{cursor:pointer;font-size:14px;line-height:1;opacity:.7}.chip-x:hover{opacity:1}
+.fdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block;margin-right:4px}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.bg-g{background:var(--green-light);color:var(--green-dark)}
+.bg-a{background:var(--amber-light);color:#7A5500}
+.bg-r{background:var(--red-light);color:var(--red)}
+.bg-b{background:var(--blue-light);color:var(--blue)}
+.bg-p{background:var(--purple-light);color:var(--purple)}
+.bg-gr{background:#F3F4F6;color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--green)}
+.sort-icon{opacity:.4;margin-left:3px}
+.sort-asc .sort-icon::after{content:'↑'}.sort-desc .sort-icon::after{content:'↓'}
+th:not(.sort-asc):not(.sort-desc) .sort-icon::after{content:'↕'}
+td{padding:11px 12px;border-bottom:1px solid #F1F3F5;font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}tr:hover td{background:#FAFBFC}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:12px}
+.lfw{display:grid;grid-template-columns:1fr 1.6fr;gap:24px;margin-bottom:24px}
+.gang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.gang-card{border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;background:var(--surface)}
+.gang-card-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.ga{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
+.ga-green{background:var(--green)}.ga-amber{background:var(--amber)}.ga-blue{background:var(--blue)}.ga-purple{background:var(--purple)}.ga-gray{background:var(--faint)}
+.gn{font-weight:600;font-size:13px}.gr-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.gang-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--faint);cursor:pointer;padding:4px;border-radius:4px;font-size:14px}
+.gang-del:hover{color:var(--red);background:var(--red-light)}
+.gang-stats{display:flex;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.gang-stat{font-size:11px;color:var(--muted);text-align:center;flex:1}
+.gang-stat strong{display:block;font-size:16px;font-weight:700;color:var(--text);font-family:'IBM Plex Mono',monospace}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.bar-chart{margin-top:4px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{font-size:12px;width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.bar-track{flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;background:var(--green);border-radius:4px;transition:width .4s}
+.bar-count{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted);width:30px;text-align:right}
+.filter-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end}
+.filter-row select,.filter-row input[type=date]{width:auto}
+.filter-row input[type=text]{width:auto;flex:1;min-width:180px}
+.org-line{border-left:2px solid var(--border);padding-left:20px;margin-left:19px;margin-top:4px}
+.org-node{margin-top:14px;display:flex;align-items:flex-start;gap:10px}
+.org-label{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);font-size:13px;background:var(--surface)}
+.org-label.um{border-color:var(--purple);background:var(--purple-light)}
+.org-label.mgr{border-color:var(--blue);background:var(--blue-light)}
+.org-label.sup{border-color:var(--amber);background:var(--amber-light)}
+.org-label.field{border-color:var(--green);background:var(--green-light);font-size:12px}
+.org-label.unassigned{border-color:var(--faint);background:#F3F4F6;color:var(--muted)}
+.log-item{padding:12px 20px;border-bottom:1px solid #F1F3F5}
+.log-item:last-child{border-bottom:none}
+.log-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.log-locs{display:flex;flex-wrap:wrap;gap:4px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:var(--r);padding:24px;width:480px;max-width:95vw;box-shadow:var(--shm);max-height:90vh;overflow-y:auto}
+.modal-lg{width:760px}
+.modal-title{font-weight:700;font-size:16px;margin-bottom:16px}
+.dup-warn{background:var(--amber-light);border:1px solid var(--amber);border-radius:6px;padding:8px 12px;font-size:12px;color:#7A5500;margin-top:8px;display:none}
+.sync-bar{background:var(--green-light);border-bottom:1px solid var(--green);padding:6px 24px;font-size:12px;color:var(--green-dark);display:none;align-items:center;gap:8px}
+.sync-bar.show{display:flex}
+.spinner{width:14px;height:14px;border:2px solid var(--green);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted)}
+.ei{font-size:36px;margin-bottom:12px}.et{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}.es{font-size:12px}
+#toast{position:fixed;bottom:24px;right:24px;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;box-shadow:var(--shm);z-index:999;transform:translateY(80px);opacity:0;transition:.25s;background:var(--green-dark)}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.warn{background:var(--amber)}
+#toast.err{background:var(--red)}
+.staff-pill{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 4px;font-size:12px;margin:3px}
+.staff-pill .ga{width:20px;height:20px;font-size:9px}
+.staff-pill .rm{cursor:pointer;color:var(--faint);font-size:13px}
+.staff-pill .rm:hover{color:var(--red)}
+.import-preview-table{width:100%;border-collapse:collapse;font-size:12px}
+.import-preview-table th{background:var(--bg);padding:6px 8px;text-align:left;border:1px solid var(--border)}
+.import-preview-table td{padding:6px 8px;border:1px solid var(--border)}
+.import-row-new{background:#F0FAF4}
+.import-row-exists{background:#FFF8E6}
+@media print{
+  header,.tabs,.role-banner,.sync-bar,.filter-row,.btn,#toast,.gang-del,.modal-overlay{display:none!important}
+  .page{display:block!important}body{background:#fff}
+}
+@media(max-width:900px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .lfw{grid-template-columns:1fr}
+  .ag{grid-template-columns:1fr}
+  .fr,.fr3{grid-template-columns:1fr}
+  .modal-lg{width:95vw}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="hlogo">IE</div>
+    <div>
+      <div class="htitle">Field Tracker</div>
+      <div class="hsub">Ikeja Electric — Agege Undertaking</div>
+    </div>
+  </div>
+  <div class="hright">
+    <div id="liveStatus" style="font-size:11px;opacity:0.85" title="Connection status">🟢 Live</div>
+    <div id="headerDate" class="hdate"></div>
+    <select class="role-select" id="roleSelect" onchange="switchRole(this.value)">
+      <option value="">— Select your role —</option>
+      <option value="um">🏢 Undertaking Manager 🔒</option>
+      <option value="manager">👔 Manager 🔒</option>
+      <option value="editor">🛠 Editor (you) 🔒</option>
+      <optgroup label="Supervisors">
+        <option value="sup_Prince">🦺 Prince</option>
+        <option value="sup_Esther Obi">🦺 Esther Obi</option>
+        <option value="sup_Esther Okon">🦺 Esther Okon</option>
+        <option value="sup_Mabel">🦺 Mabel</option>
+        <option value="sup_Amaka">🦺 Amaka</option>
+      </optgroup>
+      <option value="field">🔧 Field Worker</option>
+    </select>
+  </div>
+</header>
+
+<!-- PASSWORD GATE MODAL -->
+<div class="modal-overlay" id="pwModal" style="display:none" onclick="closePwModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="pwModalTitle">Enter Password</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">This role is locked. The password is checked against Google Sheets directly — nothing privileged happens until it's verified.</p>
+    <div class="fg">
+      <label>Password</label>
+      <input type="password" id="pwInput" onkeydown="if(event.key==='Enter')submitPassword()">
+    </div>
+    <div id="pwError" style="color:var(--red);font-size:12px;margin-bottom:10px;display:none">Incorrect password. Try again.</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn bs" onclick="closePwModal()">Cancel</button>
+      <button class="btn bp" id="pwSubmitBtn" onclick="submitPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div id="roleBanner" style="display:none" class="role-banner rb-field"></div>
+<div class="sync-bar" id="syncBar"><div class="spinner"></div><span id="syncMsg">Syncing…</span></div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-log" onclick="showPage('log')">Log Entry</div>
+  <div class="tab" id="tab-summary" onclick="showPage('summary')">Daily Summary</div>
+  <div class="tab" id="tab-records" onclick="showPage('records')">All Records</div>
+  <div class="tab" id="tab-analytics" onclick="showPage('analytics')">Analytics</div>
+  <div class="tab" id="tab-team" onclick="showPage('team')">Team</div>
+  <div class="tab" id="tab-approvals" onclick="showPage('approvals')" style="display:none">
+    Approvals <span class="badge bg-r" id="pendingCountBadge" style="margin-left:4px;display:none">0</span>
+  </div>
+</div>
+
+<!-- LOG ENTRY -->
+
+<div class="page active container" id="page-log">
+  <div class="stats-row">
+    <div class="sc sg"><div class="sl">Today's Logs</div><div class="sv" id="statToday">—</div><div class="ss">entries recorded</div></div>
+    <div class="sc sb"><div class="sl">Total Records</div><div class="sv" id="statTotal">—</div><div class="ss">all time</div></div>
+    <div class="sc sa"><div class="sl">Locations This Week</div><div class="sv" id="statLoc">—</div><div class="ss">unique transformers</div></div>
+    <div class="sc"><div class="sl">Active Gangs</div><div class="sv" id="statGangs">—</div><div class="ss">in system</div></div>
+  </div>
+
+  <div class="lfw">
+    <div class="card">
+      <div class="cb">
+
+        <!-- GANG — one tap, remembered, not a form field -->
+        <div id="gangChipArea" style="margin-bottom:18px">
+          <label style="margin-bottom:8px">Gang</label>
+          <div id="gangChipDisplay" onclick="openGangPicker()" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px dashed var(--border);border-radius:10px;color:var(--muted)">
+            <span style="font-size:20px">👷</span>
+            <span>Tap to choose a gang</span>
+          </div>
+          <select id="gangSelect" onchange="onGangChange()" style="display:none">
+            <option value="">— Select gang —</option>
+          </select>
+        </div>
+
+        <!-- LOCATION — the main event, full width, first thing your thumb hits -->
+        <div class="fg" style="margin-bottom:10px">
+          <label style="font-size:13px">📍 Where did the gang go?</label>
+          <div class="ac-wrap">
+            <input type="text" id="locInput" placeholder="Type a transformer or street name…" oninput="searchLocs()" onkeydown="handleLocKey(event)" autocomplete="off" style="font-size:16px;padding:14px;border-width:2px">
+            <div class="ac-list" id="acList"></div>
+          </div>
+          <div id="dupWarn" class="dup-warn">⚠ Already logged for this gang today.</div>
+          <div class="loc-chips" id="locChips"></div>
+          <div id="feedersUsedSummary" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+        </div>
+
+        <!-- WHAT HAPPENED — one plain-language choice instead of two dropdowns -->
+        <div class="fg">
+          <label style="font-size:13px">🔧 What's happening?</label>
+          <div id="whatHappenedGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+          <input type="hidden" id="actType" value="Inspection">
+          <input type="hidden" id="statusSel" value="Completed">
+        </div>
+
+        <!-- supervisor memory line — tiny, only shown, never demanded -->
+        <div id="supMemoryLine" style="font-size:12px;color:var(--muted);margin:10px 0;display:none"></div>
+        <select id="supOverride" style="display:none">
+          <option value="">— No supervisor for this log —</option>
+          <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option>
+          <option>Mabel</option><option>Amaka</option>
+        </select>
+
+        <button class="btn bp bfull" id="saveBtn" onclick="saveLog()" style="padding:14px;font-size:15px;margin-top:6px">
+          ➕ Log This & Keep Going
+        </button>
+
+        <!-- everything rare lives behind one disclosure -->
+        <div style="margin-top:16px">
+          <div onclick="toggleAdvanced()" style="cursor:pointer;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;user-select:none">
+            <span id="advArrow">▸</span> More options (backdate, notes, supervisor, feeder filter)
+          </div>
+          <div id="advancedPanel" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <div class="fr">
+              <div>
+                <label>Date</label>
+                <input type="date" id="logDate" onchange="clearErr(this);checkDups()">
+              </div>
+              <div>
+                <label>Time</label>
+                <input type="time" id="logTime">
+              </div>
+            </div>
+            <div class="fg">
+              <label>Supervisor for this log <span style="font-weight:400;color:var(--faint)">(overrides memory above)</span></label>
+              <select id="supOverrideVisible" onchange="document.getElementById('supOverride').value=this.value">
+                <option value="">— No supervisor —</option>
+                <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option>
+                <option>Mabel</option><option>Amaka</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Narrow location search by feeder</label>
+              <select id="feederFilter" onchange="resetLocSearch()">
+                <option value="">All Feeders — search everything</option>
+                <option>Abattoir</option><option>Abule Egba</option><option>Arigbanla</option>
+                <option>NYSC</option><option>Orile Agege</option><option>Pen Cinema</option>
+                <option>Power Line</option><option>T1Maplewood</option><option>Tabon Tabon</option>
+                <option>ABEOKUTA EXP.</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Notes</label>
+              <textarea id="logNotes" placeholder="Observations, faults found, actions taken…"></textarea>
+            </div>
+            <button class="btn bpurple bsm" onclick="openDailyPasteModal()" style="width:100%;justify-content:center">📋 Paste an entire day's sheet instead</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Today's Logs</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge bg-g" id="todayBadge">0 entries</span>
+          <button class="btn bs bsm" onclick="loadLogs()">↻ Refresh</button>
+          <button class="btn bs bsm" onclick="window.print()">🖨 Print</button>
+        </div>
+      </div>
+      <div id="todayList">
+        <div class="empty-state"><div class="ei">📋</div><div class="et">Loading…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GANG PICKER MODAL -->
+<div class="modal-overlay" id="gangPickerModal" style="display:none" onclick="closeGangPicker(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Choose a Gang</div>
+    <input type="text" id="gangPickerSearch" placeholder="Search by name…" oninput="renderGangPickerList()" style="margin-bottom:12px" autofocus>
+    <div id="gangPickerList" style="max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<!-- EDIT GANG MEMBERS MODAL -->
+<div class="modal-overlay" id="editGangModal" style="display:none" onclick="closeEditGangModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Edit Gang Members</div>
+    <input type="hidden" id="egGangId">
+    <div class="fg">
+      <label>Gang Name</label>
+      <input type="text" id="egGangName">
+    </div>
+    <div class="fg">
+      <label>Current Members <span style="font-weight:400;color:var(--faint)">(remove with ×, add below)</span></label>
+      <div id="egStaffChips" class="loc-chips"></div>
+    </div>
+    <div class="fg">
+      <label>Add a staff member</label>
+      <div class="ac-wrap">
+        <input type="text" id="egStaffInput" placeholder="Type a name…" oninput="searchStaffForEditGang()" onkeydown="handleEgStaffKey(event)" autocomplete="off">
+        <div class="ac-list" id="egStaffAcList"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+      <button class="btn bs" onclick="closeEditGangModal()">Cancel</button>
+      <button class="btn bp" onclick="saveEditGangMembers()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY SUMMARY -->
+<div class="page container" id="page-summary">
+  <div class="card" style="padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div class="ct">Daily Summary</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <input type="date" id="summaryDate" style="width:auto" onchange="renderSummary()">
+      <button class="btn bs bsm" onclick="window.print()">🖨 Print</button>
+    </div>
+  </div>
+  <div id="summaryContent"></div>
+</div>
+
+<!-- ALL RECORDS -->
+<div class="page container" id="page-records">
+  <div class="card">
+    <div class="ch">
+      <div class="ct">All Field Records</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn bs bsm" onclick="window.print()">🖨 Print</button>
+        <button class="btn bb bsm" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn bs bsm" onclick="loadLogs()">↻ Refresh</button>
+      </div>
+    </div>
+    <div class="cb" style="padding:14px 20px 8px">
+      <div class="filter-row">
+        <input type="text" id="srch" placeholder="Search gang, location, notes…" oninput="renderRecords()">
+        <select id="fSup" onchange="renderRecords()">
+          <option value="">All Supervisors</option>
+          <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option><option>Mabel</option><option>Amaka</option>
+          <option value="__unassigned__">Unassigned</option>
+        </select>
+        <select id="fFeeder" onchange="renderRecords()">
+          <option value="">All Feeders</option>
+          <option>Abattoir</option><option>Abule Egba</option><option>Arigbanla</option>
+          <option>NYSC</option><option>Orile Agege</option><option>Pen Cinema</option>
+          <option>Power Line</option><option>T1Maplewood</option><option>Tabon Tabon</option>
+          <option>ABEOKUTA EXP.</option>
+        </select>
+        <select id="fStatus" onchange="renderRecords()">
+          <option value="">All Statuses</option>
+          <option>Completed</option><option>In Progress</option><option>Pending</option><option>Escalated</option>
+        </select>
+        <input type="date" id="fDate" onchange="renderRecords()">
+      </div>
+    </div>
+    <div class="tw">
+      <table id="recTable">
+        <thead><tr>
+          <th onclick="sortBy('date')" data-col="date">Date & Time<span class="sort-icon"></span></th>
+          <th onclick="sortBy('supervisor')" data-col="supervisor">Supervisor<span class="sort-icon"></span></th>
+          <th onclick="sortBy('gang')" data-col="gang">Gang<span class="sort-icon"></span></th>
+          <th>Locations</th><th>Feeder(s)</th>
+          <th onclick="sortBy('activity')" data-col="activity">Activity<span class="sort-icon"></span></th>
+          <th onclick="sortBy('status')" data-col="status">Status<span class="sort-icon"></span></th>
+          <th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="recBody"></tbody>
+      </table>
+      <div id="recEmpty" class="empty-state" style="display:none">
+        <div class="ei">🔍</div><div class="et">No records found</div><div class="es">Adjust filters or refresh</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="page container" id="page-analytics">
+
+  <!-- 1. TODAY vs NORMAL — the one honest line at the top -->
+  <div class="card" id="todayVsNormal" style="margin-bottom:20px;padding:20px 24px">
+    <div id="todayVsNormalContent" style="font-size:15px;line-height:1.7"></div>
+  </div>
+
+  <!-- 2. NEEDS ATTENTION — what requires action right now -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><div class="ct">🚨 Needs Attention</div><span class="badge bg-r" id="attnBadge" style="display:none"></span></div>
+    <div id="needsAttentionContent" class="cb"></div>
+  </div>
+
+  <!-- 3. COVERAGE MAP — date range, by supervisor, which locations were hit -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch">
+      <div class="ct">📍 Coverage Map</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="date" id="coverageFrom" onchange="renderAnalytics()" style="width:auto;font-size:12px">
+        <span style="font-size:12px;color:var(--muted)">to</span>
+        <input type="date" id="coverageTo" onchange="renderAnalytics()" style="width:auto;font-size:12px">
+        <select id="coverageSup" onchange="renderAnalytics()" style="width:auto;font-size:12px">
+          <option value="">All Supervisors</option>
+          <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option>
+          <option>Mabel</option><option>Amaka</option>
+          <option value="__unassigned__">Unassigned</option>
+        </select>
+      </div>
+    </div>
+    <div class="cb" id="coverageContent"></div>
+  </div>
+
+  <!-- 4. STALE LOCATIONS — transformers not visited recently -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch">
+      <div class="ct">⏰ Stale Locations</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="staleDays" onchange="renderAnalytics()" style="width:auto;font-size:12px">
+          <option value="14">Not visited in 14 days</option>
+          <option value="30" selected>Not visited in 30 days</option>
+          <option value="60">Not visited in 60 days</option>
+        </select>
+        <span class="badge bg-r" id="staleBadge"></span>
+      </div>
+    </div>
+    <div class="cb" id="staleContent"></div>
+  </div>
+
+  <!-- DETAILS — the bar charts collapse here, visible but secondary -->
+  <details style="margin-bottom:20px">
+    <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);padding:12px 0;user-select:none">
+      ▸ Detailed Breakdowns (logs by supervisor, gang, feeder, activity)
+    </summary>
+    <div style="margin-top:16px">
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <select id="aPeriod" onchange="renderAnalyticsDetails()" style="width:auto">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="all">All time</option>
+        </select>
+        <select id="aSup" onchange="renderAnalyticsDetails()" style="width:auto">
+          <option value="">All Supervisors</option>
+          <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option>
+          <option>Mabel</option><option>Amaka</option>
+          <option value="__unassigned__">Unassigned</option>
+        </select>
+      </div>
+      <div class="ag">
+        <div class="card"><div class="ch"><div class="ct">By Supervisor</div></div><div class="cb"><div id="cSup" class="bar-chart"></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">By Gang</div></div><div class="cb"><div id="cGang" class="bar-chart"></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">By Feeder</div></div><div class="cb"><div id="cFeeder" class="bar-chart"></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">Activity Types</div></div><div class="cb"><div id="cAct" class="bar-chart"></div></div></div>
+      </div>
+    </div>
+  </details>
+
+</div>
+
+<!-- TEAM -->
+<div class="page container" id="page-team">
+  <div class="card" style="margin-bottom:20px;display:none" id="perfPanelCard">
+    <div class="ch">
+      <div class="ct">⏱ Backend Performance <span style="font-size:11px;font-weight:400;color:var(--muted)">(only visible to you, Editor)</span></div>
+      <button class="btn bs bsm" onclick="clearPerfLog()">Clear</button>
+    </div>
+    <div class="cb">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Every save and every sync with Google Sheets is timed here automatically. Nothing is saved anywhere — this resets when the page reloads. Use it to judge, with real numbers rather than a feeling, whether Sheets is keeping up as more people use this.</p>
+      <div id="perfVerdict" style="margin-bottom:16px"></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Time</th><th>Type</th><th>Action</th><th>Duration</th><th>Result</th></tr></thead>
+          <tbody id="perfTableBody"></tbody>
+        </table>
+        <div id="perfEmpty" class="empty-state" style="display:none"><div class="ei">⏱</div><div class="et">No timings yet</div><div class="es">Save a log or wait for the next background sync</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;display:none" id="diagPanelCard">
+    <div class="ch">
+      <div class="ct">🔬 Raw Data Inspector <span style="font-size:11px;font-weight:400;color:var(--muted)">(only visible to you, Editor)</span></div>
+      <button class="btn bs bsm" onclick="runDiagnostic()">↻ Check Now</button>
+    </div>
+    <div class="cb">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Shows exactly what the Sheet sent back, before any of the app's processing touches it — the actual truth, not a theory about what should be happening.</p>
+      <div id="diagOutput" style="font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:pre-wrap;background:var(--bg);padding:14px;border-radius:8px;max-height:400px;overflow-y:auto">Click "Check Now" to inspect the live response from your Sheet.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><div class="ct">Organisation Structure</div></div>
+    <div class="cb" id="orgTree"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch">
+      <div class="ct">Bulk Import</div>
+      <button class="btn bpurple bsm" onclick="openImportModal()">📋 Paste & Import Staff/Gangs</button>
+    </div>
+    <div class="cb">
+      <p style="font-size:12px;color:var(--muted)">Paste a table or list (e.g. copied from Word or Excel) with columns for Supervisor, Technical Gang, and Locations — the app will detect staff names, build gangs, and show you a preview to confirm before anything is saved.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><div class="ct">Technical Staff</div><span class="badge bg-b" id="staffCountBadge">0 staff</span></div>
+    <div class="cb">
+      <div class="fr">
+        <div><label>Full Name *</label><input type="text" id="newStaffName" placeholder="e.g. Omotosho"></div>
+        <div><label>Role</label>
+          <select id="newStaffRole">
+            <option>Linesman</option><option>Linesmate</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn bp bsm" onclick="addStaff()">+ Add Staff</button>
+      <div id="staffList" style="margin-top:16px;display:flex;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><div class="ct">Build a Gang</div></div>
+    <div class="cb">
+      <div class="fr">
+        <div>
+          <label>Gang Name <span style="font-weight:400;color:var(--faint)">(optional — auto-generated from names if blank)</span></label>
+          <input type="text" id="ngName" placeholder="e.g. Gang A — leave blank to auto-name">
+        </div>
+        <div>
+          <label>Supervisor <span style="font-weight:400;color:var(--faint)">(optional)</span></label>
+          <select id="ngSup">
+            <option value="">— Unassigned —</option>
+            <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option><option>Mabel</option><option>Amaka</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Technical Staff * <span style="font-weight:400;color:var(--faint)">(pick two or more — linesman/linesmate, or any pairing)</span></label>
+        <div class="ac-wrap">
+          <input type="text" id="ngStaffInput" placeholder="Type a staff name…" oninput="searchStaffForGang()" onkeydown="handleStaffKey(event)" autocomplete="off">
+          <div class="ac-list" id="ngStaffAcList"></div>
+        </div>
+        <div id="ngStaffChips" class="loc-chips"></div>
+      </div>
+      <button class="btn bp" onclick="addGang()">+ Create Gang</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <div class="ct">Field Gangs</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="gangFilterSup" onchange="renderGangGrid()" style="width:auto;font-size:12px">
+          <option value="">All Supervisors</option>
+          <option>Prince</option><option>Esther Obi</option><option>Esther Okon</option><option>Mabel</option><option>Amaka</option>
+          <option value="__unassigned__">Unassigned</option>
+        </select>
+        <span class="badge bg-g" id="gangCountBadge">0 gangs</span>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="gang-grid" id="gangGrid">
+        <div class="empty-state" style="grid-column:1/-1"><div class="ei">👷</div><div class="et">No gangs yet</div><div class="es">Build one above, or use Bulk Import</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROVALS (only visible to Undertaking Manager / Mr Rafael) -->
+<div class="page container" id="page-approvals">
+  <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg,var(--amber-light),var(--surface))">
+    <div class="cb">
+      <div style="font-weight:600;font-size:14px;margin-bottom:3px">✅ Supervisor Submissions Awaiting Approval</div>
+      <div style="font-size:12px;color:var(--muted)">Entries submitted by supervisors sit here until you or Mr Rafael approve them. You can edit details before approving — the supervisor will see exactly what changed.</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch">
+      <div class="ct">Pending Entries</div>
+      <button class="btn bs bsm" onclick="loadLogs()">↻ Refresh</button>
+    </div>
+    <div id="approvalsList">
+      <div class="empty-state"><div class="ei">✅</div><div class="et">Nothing pending</div><div class="es">All caught up</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROVAL EDIT MODAL -->
+<div class="modal-overlay" id="approveEditModal" style="display:none" onclick="closeApproveEditModal(event)">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">Review Before Approving</div>
+    <input type="hidden" id="apvId">
+    <div class="fr">
+      <div><label>Supervisor</label><input type="text" id="apvSupervisor"></div>
+      <div><label>Gang</label><input type="text" id="apvGang" disabled style="background:var(--bg)"></div>
+    </div>
+    <div class="fr">
+      <div><label>Activity</label>
+        <select id="apvActivity">
+          <option>Cash Drive</option><option>Inspection</option><option>Maintenance</option><option>Fault Response</option>
+          <option>Meter Reading</option><option>Customer Complaint</option>
+          <option>Installation</option><option>Disconnection</option><option>Reconnection</option><option>Other</option>
+        </select>
+      </div>
+      <div><label>Status</label>
+        <select id="apvStatus">
+          <option>Completed</option><option>In Progress</option><option>Pending</option><option>Escalated</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Locations (comma-separated)</label><textarea id="apvLocations" rows="2"></textarea></div>
+    <div class="fg"><label>Notes</label><textarea id="apvNotes"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn bs" onclick="closeApproveEditModal()">Cancel</button>
+      <button class="btn bp" onclick="saveApprovalEdits()">Save Changes (still pending)</button>
+      <button class="btn bb" onclick="approveFromModal()">✓ Approve This Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT LOG MODAL -->
+<div class="modal-overlay" id="editModal" style="display:none" onclick="closeEditModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Edit Log Entry</div>
+    <input type="hidden" id="editId">
+    <div class="fg"><label>Status</label>
+      <select id="editStatus">
+        <option>Completed</option><option>In Progress</option><option>Pending</option><option>Escalated</option>
+      </select>
+    </div>
+    <div class="fg"><label>Activity Type</label>
+      <select id="editActivity">
+        <option>Cash Drive</option><option>Inspection</option><option>Maintenance</option><option>Fault Response</option>
+        <option>Meter Reading</option><option>Customer Complaint</option>
+        <option>Installation</option><option>Disconnection</option><option>Reconnection</option><option>Other</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="editNotes"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn bs" onclick="closeEditModal()">Cancel</button>
+      <button class="btn bp" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL — STEP 1: PASTE -->
+<div class="modal-overlay" id="importModal" style="display:none" onclick="closeImportModal(event)">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">📋 Paste Staff / Gang / Location Data</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+      Paste a table copied from Word/Excel (tab-separated) or a plain text list. Expected columns: <strong>Supervisor</strong>, <strong>Technical Gang</strong> (e.g. "Omotosho & David"), <strong>Locations</strong> (comma-separated). Supervisor can be left blank for unassigned gangs.
+    </p>
+    <textarea id="importRaw" rows="10" placeholder="Supervisor	Technical Gang	Locations
+Amaka	Omotosho & David	Amoo, Yekini, Ibido
+Esther Obi	Olayinka & Seyi	Ajiboye Street, Kasunmu
+	Owoeye & Fatai	Alaagba estate, Scheme 1"></textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn bs" onclick="closeImportModal()">Cancel</button>
+      <button class="btn bpurple" onclick="parseImport()">Parse & Preview →</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL — STEP 2: CONFIRM PREVIEW -->
+<div class="modal-overlay" id="importPreviewModal" style="display:none" onclick="closeImportPreview(event)">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">Confirm Import</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+      Review what will be created. <span style="color:var(--green-dark);font-weight:600">Green rows</span> are new gangs/staff to add. <span style="color:#7A5500;font-weight:600">Amber rows</span> already exist and will be skipped. Nothing is saved until you click Confirm.
+    </p>
+    <div id="importPreviewContent" style="max-height:50vh;overflow-y:auto"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn bs" onclick="closeImportPreview()">Cancel</button>
+      <button class="btn bp" id="confirmImportBtn" onclick="confirmImport()">✓ Confirm & Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY PASTE — STEP 1: PASTE -->
+<div class="modal-overlay" id="dailyPasteModal" style="display:none" onclick="closeDailyPasteModal(event)">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">📋 Daily Paste — Log Today's Field Activity</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+      Paste your daily table (Supervisor / Technical Gang / Locations) copied straight from Word or Excel. The app will match each location to a feeder from the master list automatically, and let you fix anything before saving.
+    </p>
+    <div class="fr">
+      <div>
+        <label>Date for this batch</label>
+        <input type="date" id="dpDate">
+      </div>
+      <div>
+        <label>Time</label>
+        <input type="time" id="dpTime">
+      </div>
+    </div>
+    <label>Paste your table</label>
+    <textarea id="dpRaw" rows="10" placeholder="Supervisor	Technical Gang	Locations
+Amaka	Omotosho & David	Amoo, Yekini, Ibido, Ipaja hvds, Iyana Odo 1, Aige
+Esther Obi	Olayinka & Seyi	Ajiboye Street, Kasunmu, Niger West
+	Owoeye & Fatai	Alaagba estate, Scheme 1"></textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
+      <button class="btn bs" onclick="closeDailyPasteModal()">Cancel</button>
+      <button class="btn bpurple" onclick="parseDailyPaste()">Match Locations & Preview →</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY PASTE — STEP 2: EDITABLE CONFIRM -->
+<div class="modal-overlay" id="dpPreviewModal" style="display:none" onclick="closeDpPreview(event)">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-title">Confirm Today's Field Logs</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+      For each location, the best feeder match is pre-selected. <span style="color:#7A5500;font-weight:600">Amber rows</span> need your attention — either no confident match was found, or there's more than one candidate. Use the dropdown to confirm or correct each one. Nothing is saved until you click Confirm.
+    </p>
+    <div id="dpPreviewContent" style="max-height:55vh;overflow-y:auto"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;align-items:center">
+      <span id="dpSummary" style="font-size:12px;color:var(--muted);margin-right:auto"></span>
+      <button class="btn bs" onclick="closeDpPreview()">Cancel</button>
+      <button class="btn bp" id="confirmDpBtn" onclick="confirmDailyPaste()">✓ Confirm & Save All</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const API = 'YOUR_SCRIPT_URL_HERE';
+
+// ── TRANSFORMER DATA ───────────────────────────────────────────────────────────
+const TX=[{"f": "Orile Agege", "l": "AJIBOYE STREET"}, {"f": "Abattoir", "l": "OLA AHMEND CDA"}, {"f": "Orile Agege", "l": "AKINLEYE STREET"}, {"f": "Orile Agege", "l": "BAPTIST"}, {"f": "Arigbanla", "l": "ORILE AGEGE UNDERTAKING"}, {"f": "Orile Agege", "l": "OTA ROAD"}, {"f": "Power Line", "l": "SALEM"}, {"f": "Tabon Tabon", "l": "ALAFIA STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ALAFIA STREET POLE 2"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 2"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 3"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 4"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 5"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 6"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 7"}, {"f": "Tabon Tabon", "l": "ALARAMIMO STREET POLE 8"}, {"f": "Tabon Tabon", "l": "ALHAJI OLADIPUPO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ALHAJI OLADIPUPO STREET POLE 2"}, {"f": "Tabon Tabon", "l": "ARAROMI STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ARUBO POLE 1"}, {"f": "Tabon Tabon", "l": "AYOOLA POLE 1"}, {"f": "Tabon Tabon", "l": "AYOOLA POLE 2"}, {"f": "Tabon Tabon", "l": "DADA POLE 1"}, {"f": "Tabon Tabon", "l": "DADA POLE 2"}, {"f": "Tabon Tabon", "l": "DORCAS MOROLAHUN 5"}, {"f": "Tabon Tabon", "l": "DORCAS MOROLAHUN POLE 1"}, {"f": "Tabon Tabon", "l": "DORCAS MOROLAHUN POLE 2"}, {"f": "Tabon Tabon", "l": "DORCAS MOROLAHUN POLE 3"}, {"f": "Tabon Tabon", "l": "DORCAS MOROLAHUN POLE 4"}, {"f": "Tabon Tabon", "l": "EGBATEDO POLE 1"}, {"f": "Tabon Tabon", "l": "EGBATEDO POLE 2"}, {"f": "Tabon Tabon", "l": "EGBATEDO POLE 3"}, {"f": "Tabon Tabon", "l": "EGBATEDO POLE 4"}, {"f": "Tabon Tabon", "l": "EGBATEDO POLE 5"}, {"f": "Tabon Tabon", "l": "EGBATEDO POLE 6"}, {"f": "Tabon Tabon", "l": "EJALONIBU POLE 1"}, {"f": "Tabon Tabon", "l": "EJALONIBU POLE 2"}, {"f": "Tabon Tabon", "l": "EKUNDAYO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "EKUNDAYO STREET POLE 2"}, {"f": "Tabon Tabon", "l": "EMMANUEL STREET POLE 1"}, {"f": "Tabon Tabon", "l": "EMMANUEL STREET POLE 2"}, {"f": "Tabon Tabon", "l": "ESTHER OMOYEMI STR. POLE 1"}, {"f": "Tabon Tabon", "l": "ESUOLA STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ESUOLA STREET POLE 2"}, {"f": "Tabon Tabon", "l": "FABAJO CLOSE POLE 1"}, {"f": "Tabon Tabon", "l": "FABAJO CLOSE POLE 2"}, {"f": "Tabon Tabon", "l": "FASAN CLOSE POLE 2"}, {"f": "Tabon Tabon", "l": "FASAN POLE 1"}, {"f": "Tabon Tabon", "l": "FOLORUNSHO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "FOLORUNSHO STREET POLE 2"}, {"f": "Tabon Tabon", "l": "HVDS AGBOJINU 1"}, {"f": "Tabon Tabon", "l": "HVDS AGBOJINU 2"}, {"f": "Tabon Tabon", "l": "HVDS AKINLAGUN"}, {"f": "Tabon Tabon", "l": "HVDS ALH YMA OLOYEDE CLOSE 1"}, {"f": "Tabon Tabon", "l": "HVDS ALH YMA OLOYEDE CLOSE 2"}, {"f": "Tabon Tabon", "l": "HVDS ALH YMA OLOYEDE CLOSE 3"}, {"f": "Tabon Tabon", "l": "HVDS ALH YMA OLOYEDE CLOSE 4"}, {"f": "Tabon Tabon", "l": "HVDS OFF ODUTOLA"}, {"f": "Tabon Tabon", "l": "HVDS OLA OLUWA 1"}, {"f": "Tabon Tabon", "l": "HVDS OLA OLUWA 2"}, {"f": "Tabon Tabon", "l": "HVDS OYATOKI"}, {"f": "Tabon Tabon", "l": "HVDS SHORETIRE"}, {"f": "Power Line", "l": "DADDY ONIYIDE"}, {"f": "Abule Egba", "l": "SUNSHINE ESTATE2"}, {"f": "Abattoir", "l": "SCHEME I ESTATE2"}, {"f": "Abule Egba", "l": "SUNSHINE ESTATE1"}, {"f": "Abattoir", "l": "SCHEME I ESTATE"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN"}, {"f": "Abule Egba", "l": "AKINSEGUN STR POLE 1"}, {"f": "Abule Egba", "l": "AKINSEGUN STR POLE 2"}, {"f": "Abule Egba", "l": "AKINSEGUN STR POLE 3"}, {"f": "Abule Egba", "l": "AKINSEGUN STR POLE 4"}, {"f": "Abule Egba", "l": "AKINSOLA STREET (CLOSE) POLE 1"}, {"f": "Abule Egba", "l": "AKINSOLA STREET (CLOSE) POLE 2"}, {"f": "Abule Egba", "l": "AKINSOLA STREET (CLOSE) POLE 3"}, {"f": "Abule Egba", "l": "AKINTUNDE WILLIAMS POLE 1"}, {"f": "Abule Egba", "l": "AKINTUNDE WILLIAMS POLE 2"}, {"f": "Abule Egba", "l": "AKINTUNDE WILLIAMS POLE 3"}, {"f": "Abule Egba", "l": "AKINTUNDE WILLIAMS POLE 4"}, {"f": "Abule Egba", "l": "AKINTUNDE WILLIAMS POLE 5"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 1"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 2"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 3"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 4"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 5"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 6"}, {"f": "Abule Egba", "l": "AKINWUNMI STREET POLE 7"}, {"f": "Abattoir", "l": "ALH. SIKIRU ODUNTAN POLE 1"}, {"f": "Abattoir", "l": "ALH. SIKIRU ODUNTAN POLE 2"}, {"f": "Abattoir", "l": "ALH. SIKIRU ODUNTAN POLE 3"}, {"f": "Abattoir", "l": "ALH. SIKIRU ODUNTAN POLE 4"}, {"f": "Abattoir", "l": "ALH. SIKIRU ODUNTAN POLE 5"}, {"f": "Abule Egba", "l": "ARIKEMBI LANE POLE 1"}, {"f": "Abule Egba", "l": "ARIKEMBI LANE POLE 2"}, {"f": "Abule Egba", "l": "ARIKEMBI LANE POLE 3"}, {"f": "Abule Egba", "l": "ARIKEMBI LANE POLE 4"}, {"f": "Abule Egba", "l": "AUGUSTOS ESTATE POLE 1"}, {"f": "Abule Egba", "l": "AUGUSTOS ESTATE POLE 2"}, {"f": "Abule Egba", "l": "AUGUSTOS ESTATE POLE 3"}, {"f": "Abule Egba", "l": "AYOPEJU OLUDAYO CLOSE POLE 1"}, {"f": "Abule Egba", "l": "AYOPEJU OLUDAYO CLOSE POLE 2"}, {"f": "Abule Egba", "l": "AYOPEJU OLUDAYO CLOSE POLE 3"}, {"f": "Abule Egba", "l": "AYOPEJU OLUDAYO CLOSE POLE 4"}, {"f": "Abule Egba", "l": "BAMKOL PLAZA"}, {"f": "Abule Egba", "l": "CHIEF KOLA AKINLADE STR POLE 1"}, {"f": "Abule Egba", "l": "CHIEF KOLA AKINLADE STR POLE 2"}, {"f": "Abule Egba", "l": "CHIEF KOLA AKINLADE STR POLE 3"}, {"f": "Abule Egba", "l": "CHIEF KOLA AKINLADE STR POLE 4"}, {"f": "Abule Egba", "l": "DASILVA STREET POLE 1"}, {"f": "Abule Egba", "l": "DASILVA STREET POLE 2"}, {"f": "Abule Egba", "l": "DASILVA STREET POLE 3"}, {"f": "Abule Egba", "l": "DASILVA STREET POLE 4"}, {"f": "Abule Egba", "l": "DASILVA STREET POLE 5"}, {"f": "Abule Egba", "l": "HVDS ALEXANDRA 2"}, {"f": "Abule Egba", "l": "HVDS ALEXANDRA 4"}, {"f": "Abule Egba", "l": "HVDS CORNERSTONE CLOSE(LABAK)"}, {"f": "Abattoir", "l": "IBRAHIM STREET POLE 1"}, {"f": "Abattoir", "l": "IBRAHIM STREET POLE 2"}, {"f": "Abattoir", "l": "IBRAHIM STREET POLE 3"}, {"f": "Abattoir", "l": "IJEBU TEDO STR POLE 1"}, {"f": "Abattoir", "l": "ILESANMI CLOSE OFF ADEBAYO POLE 1"}, {"f": "Abattoir", "l": "IMAFIDON STR POLE 1"}, {"f": "Abattoir", "l": "IMAFIDON STR POLE 2"}, {"f": "Abattoir", "l": "IMAFIDON STR POLE 3"}, {"f": "Abattoir", "l": "IMAFIDON STR POLE 4"}, {"f": "Abule Egba", "l": "KUMOLUYI STR JUNCTION E"}, {"f": "Abule Egba", "l": "KUMULUYI STREET POLE 2"}, {"f": "Abule Egba", "l": "LABAK EST(CORNERSTONE)"}, {"f": "Abule Egba", "l": "LABAK"}, {"f": "Abule Egba", "l": "LADOJE"}, {"f": "Tabon Tabon", "l": "ADAMO KABIAWU"}, {"f": "Abattoir", "l": "DIVERSARY SOLUTION"}, {"f": "Abule Egba", "l": "DASILVA STREET POLE 6"}, {"f": "Orile Agege", "l": "JIBOWU"}, {"f": "Abattoir", "l": "POPOOLA CLOSE POLE 2"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 1"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 10"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 11"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 2"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 3"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 4"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 5"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 6"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 7"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 8"}, {"f": "Abule Egba", "l": "PROGRESS RD POLE 9"}, {"f": "Abule Egba", "l": "SAM FAKAYODE CLOSE POLE 1"}, {"f": "Abattoir", "l": "SELIAT ADEYEMI CLOSE (OFF ADESINA POLE 1"}, {"f": "Abule Egba", "l": "SUBUOLA STREET POLE 1"}, {"f": "Abule Egba", "l": "SUBUOLA STREET POLE 2"}, {"f": "Abule Egba", "l": "SUBUOLA STREET POLE 3"}, {"f": "Abattoir", "l": "SUCO ROAD 1"}, {"f": "Abattoir", "l": "SUCO ROAD 2"}, {"f": "Abattoir", "l": "TAIWO ADEWUNMI STR POLE 1"}, {"f": "Abattoir", "l": "TAIWO ADEWUNMI STR POLE 2"}, {"f": "Abattoir", "l": "TAIWO ADEWUNMI STR POLE 2B"}, {"f": "Abattoir", "l": "TAIWO ADEWUNMI STR POLE 3"}, {"f": "Abattoir", "l": "TAIWO ADEWUNMI STR POLE 4"}, {"f": "Abule Egba", "l": "TAIWO ONI STR POLE 1"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 1"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 2"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 3"}, {"f": "Abule Egba", "l": "WILLIAMS AWODEIN POLE 4"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 5"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 6"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 7"}, {"f": "Abattoir", "l": "WILLIAMS AWODEIN POLE 8"}, {"f": "Orile Agege", "l": "ADEBOLA STREET POLE 1"}, {"f": "Orile Agege", "l": "ADEKUNLE LANE POLE 1"}, {"f": "Orile Agege", "l": "AIGE STREET POLE 1"}, {"f": "Orile Agege", "l": "AIGE STREET POLE 2"}, {"f": "Orile Agege", "l": "AIGE STREET POLE 3"}, {"f": "Orile Agege", "l": "AIGE STREET POLE 4"}, {"f": "Orile Agege", "l": "AIGE STREET POLE 5"}, {"f": "Orile Agege", "l": "AIGE STREET POLE 6"}, {"f": "Orile Agege", "l": "AJIBOYE STREET POLE 1"}, {"f": "Orile Agege", "l": "AJIBOYE STREET POLE 2"}, {"f": "Orile Agege", "l": "AJIBOYE STREET POLE 3"}, {"f": "Orile Agege", "l": "AJIBOYE STREET POLE 5"}, {"f": "Orile Agege", "l": "AKINLEYE STREET POLE 1"}, {"f": "Orile Agege", "l": "AKINLEYE STREET POLE 2"}, {"f": "Orile Agege", "l": "AKINLEYE STREET POLE 3"}, {"f": "Orile Agege", "l": "AKINLEYE STREET POLE 4"}, {"f": "Orile Agege", "l": "AKINLEYE STREET POLE 5"}, {"f": "Orile Agege", "l": "AKINTUNDE STREET POLE 1"}, {"f": "Orile Agege", "l": "ALARAMIMO POLE 1"}, {"f": "Orile Agege", "l": "AMODU STREET POLE 1"}, {"f": "Orile Agege", "l": "AMODU STREET POLE 2"}, {"f": "Orile Agege", "l": "AZEEZ OLAOSEBIKAN STR POLE 1"}, {"f": "Orile Agege", "l": "AZEEZ OLAOSEBIKAN STR POLE 2"}, {"f": "Orile Agege", "l": "BABAYEMI STREET POLE 1"}, {"f": "Orile Agege", "l": "BABAYEMI STREET POLE 2"}, {"f": "Orile Agege", "l": "BABAYEMI STREET POLE 3"}, {"f": "Orile Agege", "l": "BABAYEMI STREET POLE 4"}, {"f": "Orile Agege", "l": "BADE ABIONA STR POLE 1"}, {"f": "Orile Agege", "l": "BADE ABIONA STR POLE 2"}, {"f": "Power Line", "l": "ASHIPA"}, {"f": "Power Line", "l": "JINADU 1 (CITY HOTEL)"}, {"f": "Abattoir", "l": "AJOKE ESTATE"}, {"f": "Power Line", "l": "OMOTOYE"}, {"f": "Power Line", "l": "SOMOYE 1"}, {"f": "Pen Cinema", "l": "AMOO"}, {"f": "Pen Cinema", "l": "KASUMU"}, {"f": "Orile Agege", "l": "BADE ABIONA STR POLE 3"}, {"f": "Orile Agege", "l": "BADE ABIONA STR POLE 4"}, {"f": "Orile Agege", "l": "BALOGUN STREET POLE 1"}, {"f": "Orile Agege", "l": "BALOGUN STREET POLE 2"}, {"f": "Orile Agege", "l": "BALOGUN STREET POLE 3"}, {"f": "Orile Agege", "l": "BALOGUN STREET POLE 4"}, {"f": "Orile Agege", "l": "CHURCH STR POLE 1"}, {"f": "Orile Agege", "l": "CHURCH STR POLE 2"}, {"f": "Orile Agege", "l": "COKER STREET POLE 1"}, {"f": "Orile Agege", "l": "COKER STREET POLE 2"}, {"f": "Orile Agege", "l": "DADA AKAPO STR POLE 1"}, {"f": "Orile Agege", "l": "DADA AKAPO STR POLE 2"}, {"f": "Orile Agege", "l": "DADA AKAPO STR POLE 3"}, {"f": "Orile Agege", "l": "DADA AKAPO STR POLE 4"}, {"f": "Orile Agege", "l": "ELEMADU CLOSE POLE 1"}, {"f": "Orile Agege", "l": "ELEMADU CLOSE POLE 2"}, {"f": "Orile Agege", "l": "FAGBOLA STREET POLE 1"}, {"f": "Orile Agege", "l": "FAGBOLA STREET POLE 2"}, {"f": "Orile Agege", "l": "FAGBOLA STREET POLE 3"}, {"f": "Orile Agege", "l": "FAGBOLA STREET POLE 4"}, {"f": "Orile Agege", "l": "FAGBOLA STREET POLE 5"}, {"f": "Orile Agege", "l": "FAGBOLA STREET POLE 6"}, {"f": "Orile Agege", "l": "GREEN HILL ESTATE POLE 1"}, {"f": "Orile Agege", "l": "GREEN HILL ESTATE POLE 2"}, {"f": "Orile Agege", "l": "GREEN HILL ESTATE POLE 3"}, {"f": "Orile Agege", "l": "GREEN HILL ESTATE POLE 4"}, {"f": "Orile Agege", "l": "GREEN HILL ESTATE POLE 5"}, {"f": "Orile Agege", "l": "HVDS ANIKULAPO"}, {"f": "Orile Agege", "l": "HVDS OYELEYE"}, {"f": "Orile Agege", "l": "IRESI STREET POLE 1"}, {"f": "Orile Agege", "l": "IRESI STREET POLE 2"}, {"f": "Orile Agege", "l": "IRESI STREET POLE 3"}, {"f": "Orile Agege", "l": "ITOGBE STR POLE 1"}, {"f": "Orile Agege", "l": "ITOGBE STR POLE 2"}, {"f": "Orile Agege", "l": "ITOGBE STR POLE 3"}, {"f": "Orile Agege", "l": "ITOGBE STR POLE 4"}, {"f": "Orile Agege", "l": "JINADU STREET POLE 1"}, {"f": "Orile Agege", "l": "JINADU STREET POLE 2"}, {"f": "Orile Agege", "l": "JINADU STREET POLE 3"}, {"f": "Orile Agege", "l": "JINADU STREET POLE 4"}, {"f": "Orile Agege", "l": "JOBAK STREET POLE 1"}, {"f": "Orile Agege", "l": "JOBAK STREET POLE 2"}, {"f": "Orile Agege", "l": "JUBILEE STREET POLE 1"}, {"f": "Orile Agege", "l": "JUBILEE STREET POLE 2"}, {"f": "Orile Agege", "l": "LASISI AYANWALE POLE 1"}, {"f": "Orile Agege", "l": "LATEEF STREET POLE 1"}, {"f": "Orile Agege", "l": "MORENIKE CARINA"}, {"f": "Orile Agege", "l": "MORENIKE CARINA STR POLE 1"}, {"f": "Orile Agege", "l": "MORENIKE CARINA STR POLE 2"}, {"f": "Orile Agege", "l": "MORENIKE CARINA STR POLE 3"}, {"f": "Orile Agege", "l": "OGUNTADE STR POLE 1"}, {"f": "Orile Agege", "l": "OLADIPO OSHINUGA STR POLE 1"}, {"f": "Orile Agege", "l": "OLAROKUN STR POLE 1"}, {"f": "Orile Agege", "l": "OLAROKUN STR POLE 2"}, {"f": "Orile Agege", "l": "OLAROKUN STR POLE 3"}, {"f": "Orile Agege", "l": "OLAROKUN STR POLE 4"}, {"f": "Orile Agege", "l": "OLAROKUN STR POLE 5"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 1"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 2"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 3"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 4"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 5"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 6"}, {"f": "Orile Agege", "l": "OLURINDE STREE T POLE 7"}, {"f": "Orile Agege", "l": "ORELOPE STREET POLE 1"}, {"f": "Orile Agege", "l": "ORELOPE STREET POLE 2"}, {"f": "Arigbanla", "l": "ARIGBANLA"}, {"f": "NYSC", "l": "ALAAGBA"}, {"f": "NYSC", "l": "ALAAGBA RESIDENTIAL"}, {"f": "NYSC", "l": "IYANA ODO 1"}, {"f": "NYSC", "l": "IYANA ODO 2"}, {"f": "NYSC", "l": "DORCAS ADEGBITE"}, {"f": "NYSC", "l": "MILLENIUM ESTATE"}, {"f": "NYSC", "l": "ALAAGBA ESTATE"}, {"f": "Arigbanla", "l": "26 AJIBOYE STREET"}, {"f": "Arigbanla", "l": "32 AJIBOYE STREET"}, {"f": "Arigbanla", "l": "60 AJIBOYE STREET"}, {"f": "Arigbanla", "l": "64 AJIBOYE STREET"}, {"f": "Arigbanla", "l": "7, ARAROMI STREET"}, {"f": "Arigbanla", "l": "ARIGBANLA 51"}, {"f": "Arigbanla", "l": "ARIGBANLA STREET POLE 1"}, {"f": "Arigbanla", "l": "HVDS AJIBOYE 1 B"}, {"f": "Arigbanla", "l": "HVDS AJIBOYE 2"}, {"f": "Arigbanla", "l": "HVDS AJIBOYE 3"}, {"f": "Arigbanla", "l": "HVDS AWOFE"}, {"f": "Arigbanla", "l": "SHOLABOMI WILLIAMS STR POLE 1"}, {"f": "Arigbanla", "l": "SHOLABOMI WILLIAMS STR POLE 2"}, {"f": "Arigbanla", "l": "SHOLABOMI WILLIAMS STR POLE 3"}, {"f": "Abule Egba", "l": "1 OKO OBA SCHEME 2"}, {"f": "Abule Egba", "l": "2A PEACE BOULEVARD"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST (LOVE AVENUE) POLE 1"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 1"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 10"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 11"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 12"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 2"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 3"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 4"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 5"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 6"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 7"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 8"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 8A"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(ASS0CIATION CR) POLE 9"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(PEACE BOULEVARD) POLE 1"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(PEACE BOULEVARD) POLE 3"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(PEACE BOULEVARD) POLE 4"}, {"f": "Abule Egba", "l": "ABIMBOLA AWOLIYI EST(PEACE BOULEVARD) POLE 5"}, {"f": "Abule Egba", "l": "ABIMBOLA OMOWUMI CLOSE POLE 1"}, {"f": "Abattoir", "l": "ADEBAYO STR POLE 1"}, {"f": "Abattoir", "l": "ADEBAYO STR POLE 2"}, {"f": "Abule Egba", "l": "ADEGBAJU STREET POLE 1"}, {"f": "Abule Egba", "l": "ADEGBAJU STREET POLE 2"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 1"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 2"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 3"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 4"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 5"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 6"}, {"f": "Abattoir", "l": "ADEOLA ADEFOLABI STR POLE 7"}, {"f": "Abattoir", "l": "ADESINA ELEMIDE STR POLE 1"}, {"f": "Abattoir", "l": "ADESINA ELEMIDE STR POLE 2"}, {"f": "Abattoir", "l": "ADESINA ELEMIDE STR POLE 3"}, {"f": "Abattoir", "l": "ADESINA ELEMIDE STR POLE 4"}, {"f": "Abattoir", "l": "ADESINA ELEMIDE STR POLE 5"}, {"f": "Abattoir", "l": "ADETUNJI CRESCENT POLE 1"}, {"f": "Abattoir", "l": "ADETUNJI CRESCENT POLE 2"}, {"f": "Abattoir", "l": "ADETUNJI CRESCENT POLE 3"}, {"f": "Abattoir", "l": "ADETUNJI CRESCENT POLE 4"}, {"f": "Abattoir", "l": "ADETUNJI CRESCENT POLE 5"}, {"f": "Abattoir", "l": "ADETUNJI CRESCENT POLE 6"}, {"f": "Abattoir", "l": "AGRIC RD POLE 1"}, {"f": "Abattoir", "l": "AGRIC RD POLE 2"}, {"f": "Abattoir", "l": "AGRIC RD POLE 3"}, {"f": "Abattoir", "l": "AGRIC RD POLE 4"}, {"f": "Abattoir", "l": "AGRIC RD POLE 5"}, {"f": "Abattoir", "l": "AGRIC RD POLE 6"}, {"f": "Abattoir", "l": "AGRIC RD POLE 7"}, {"f": "Abattoir", "l": "AGRIC RD POLE 8"}, {"f": "Abattoir", "l": "AGRIC RD POLE 9"}, {"f": "Abattoir", "l": "AJUWON STREET POLE 1"}, {"f": "Abule Egba", "l": "AKINOLA DUYILE CLOSE POLE 1"}, {"f": "Abule Egba", "l": "AKINOLA DUYILE CLOSE POLE 2"}, {"f": "Pen Cinema", "l": "IPAJA 2"}, {"f": "Pen Cinema", "l": "IPAJA 3"}, {"f": "Pen Cinema", "l": "JINADU"}, {"f": "Tabon Tabon", "l": "ARUBO 200"}, {"f": "Tabon Tabon", "l": "ASIWAJU ESTATE"}, {"f": "Abattoir", "l": "AYODELE HOSPITAL"}, {"f": "Abattoir", "l": "ARCH DAVID ADEGBITE"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 11"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 12"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 13"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 2"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 3"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 4"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 5"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 6"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 7"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 8"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 9"}, {"f": "Tabon Tabon", "l": "OLADEINDE STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OLADEJO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OLADIPO OSHINUGA POLE 1"}, {"f": "Tabon Tabon", "l": "OLAGOKE POLE 1"}, {"f": "Tabon Tabon", "l": "OLAGOKE POLE 2"}, {"f": "Tabon Tabon", "l": "OLAGOKE POLE 3"}, {"f": "Tabon Tabon", "l": "OLAGOKE POLE 4"}, {"f": "Tabon Tabon", "l": "OLAGOKE POLE 5"}, {"f": "Tabon Tabon", "l": "OLALEYE STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OLALEYE STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OLALEYE STREET POLE 3"}, {"f": "Tabon Tabon", "l": "OLALEYE STREET POLE 4"}, {"f": "Tabon Tabon", "l": "OLALEYE STREET POLE 5"}, {"f": "Tabon Tabon", "l": "OLASOJI STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OLASOJI STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OLASOJI STREET POLE 3"}, {"f": "Tabon Tabon", "l": "OREMEJI CLOSE HVDS"}, {"f": "Tabon Tabon", "l": "OREMOSU STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OREMOSU STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OSHODI STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OSHODI STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OYATOKI POLE 1"}, {"f": "Tabon Tabon", "l": "OYEBOLA STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OYEBOLA STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OYEBOLA STREET POLE 3"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 1"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 2"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 3"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 4"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 5"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 6"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 7"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 8"}, {"f": "Tabon Tabon", "l": "POWERLINE ROAD POLE 9"}, {"f": "Tabon Tabon", "l": "SANYA OLU STREET POLE 2"}, {"f": "Tabon Tabon", "l": "SANYA OLU STREET POLE 3"}, {"f": "Tabon Tabon", "l": "SANYA OLU STREET POLE 4"}, {"f": "Tabon Tabon", "l": "SANYA OLU STREET POLE 5"}, {"f": "Tabon Tabon", "l": "SANYA OLU STREET POLE 6"}, {"f": "Tabon Tabon", "l": "SANYAOLU POLE 1"}, {"f": "Tabon Tabon", "l": "SHODOLAMI STREET POLE 1"}, {"f": "Tabon Tabon", "l": "SHODOLAMI STREET POLE 2"}, {"f": "Tabon Tabon", "l": "SHODOLAMI STREET POLE 3"}, {"f": "Tabon Tabon", "l": "TAJUDEEN AJALA CLOSE POLE 1"}, {"f": "Tabon Tabon", "l": "TEMIDIRE STREET POLE 1"}, {"f": "Tabon Tabon", "l": "TEMIDIRE STREET POLE 2"}, {"f": "Tabon Tabon", "l": "TEMIDIRE STREET POLE 3"}, {"f": "Tabon Tabon", "l": "TUNDE DAVIES STREET POLE 1"}, {"f": "Tabon Tabon", "l": "TUNDE DAVIES STREET POLE 2"}, {"f": "Tabon Tabon", "l": "TUNDE DAVIES STREET POLE 3"}, {"f": "Tabon Tabon", "l": "TUNJI IDOWU POLE 1"}, {"f": "Tabon Tabon", "l": "YOMI OYENUGU STR POLE 1"}, {"f": "Tabon Tabon", "l": "YOMI OYENUGU STR POLE 2"}, {"f": "Tabon Tabon", "l": "YOMI OYENUGU STR POLE 3"}, {"f": "Orile Agege", "l": "OSHOBU"}, {"f": "Orile Agege", "l": "FAGBOLA STREET"}, {"f": "Abule Egba", "l": "MILLENIUM"}, {"f": "Abule Egba", "l": "NIGERWEST"}, {"f": "Abule Egba", "l": "OLAPADE"}, {"f": "Abattoir", "l": "PALM VIEW"}, {"f": "Abule Egba", "l": "PHASE IV"}, {"f": "Power Line", "l": "ANU OLUWAPO STREET POLE 2"}, {"f": "Power Line", "l": "ANU OLUWAPO STREET POLE 3"}, {"f": "Power Line", "l": "ANU OLUWAPO STREET POLE 4"}, {"f": "Power Line", "l": "HVDS IBIDO 1"}, {"f": "Power Line", "l": "HVDS IPAJA ROAD"}, {"f": "Power Line", "l": "IBIDO STREET POLE 1"}, {"f": "Power Line", "l": "IBIDO STREET POLE 2"}, {"f": "Power Line", "l": "IBIDO STREET POLE 3"}, {"f": "Power Line", "l": "IBIDO STREET POLE 4"}, {"f": "Power Line", "l": "IBIDO STREET POLE 5"}, {"f": "Power Line", "l": "IMASHAI POLE 4"}, {"f": "Power Line", "l": "IMASHAI STREET POLE 1"}, {"f": "Power Line", "l": "IMASHAI STREET POLE 2"}, {"f": "Power Line", "l": "IMASHAI STREET POLE 3"}, {"f": "Power Line", "l": "ITOGBE STREET POLE 1"}, {"f": "Power Line", "l": "ITOGBE STREET POLE 2"}, {"f": "Power Line", "l": "OJEKUNLE POLE 1 A"}, {"f": "Power Line", "l": "OJEKUNLE POLE 2 A"}, {"f": "Power Line", "l": "OJEKUNLE STREET A POLE 2"}, {"f": "Power Line", "l": "OJEKUNLE STREET A POLE 3"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 1"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 4"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 5"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 6"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 7"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 8"}, {"f": "Power Line", "l": "OJEKUNLE STREET B POLE 9"}, {"f": "Power Line", "l": "OJEKUNLE STRRET B POLE 2"}, {"f": "Power Line", "l": "OJEKUNLE STRRET B POLE 3"}, {"f": "Power Line", "l": "OLUKOSI STREET POLE 1"}, {"f": "Power Line", "l": "OLUKOSI STREET POLE 2"}, {"f": "Power Line", "l": "OLUKOSI STREET POLE 3"}, {"f": "Power Line", "l": "OLUKOSI STREET POLE 4"}, {"f": "Power Line", "l": "OLUKOSI STREET POLE 5"}, {"f": "Power Line", "l": "OSANYINPEJU STREET POLE 1"}, {"f": "Power Line", "l": "OSHINJINRIN STREET POLE 1"}, {"f": "Power Line", "l": "OSHINJINRIN STREET POLE 2"}, {"f": "Power Line", "l": "OWOLABI OMOTOYE STREET POLE 1"}, {"f": "Power Line", "l": "OWOLABI OMOTOYE STREET POLE 2"}, {"f": "Power Line", "l": "OWOLABI OMOTOYE STREET POLE 3"}, {"f": "Power Line", "l": "OWOLABI OMOTOYE STREET POLE 4"}, {"f": "Power Line", "l": "POLE 6 OPP IPAJA RD"}, {"f": "Power Line", "l": "POWERLINE ROAD POLE 1"}, {"f": "Power Line", "l": "POWERLINE ROAD POLE 2"}, {"f": "Power Line", "l": "POWERLINE ROAD POLE 3"}, {"f": "Power Line", "l": "SANIMOTU STREET POLE 1"}, {"f": "Power Line", "l": "SANIMOTU STREET POLE 2"}, {"f": "Power Line", "l": "SOFUNDE POLE 1"}, {"f": "Power Line", "l": "WILLIAMS EST RD 1 POLE 1"}, {"f": "Power Line", "l": "WILLIAMS EST RD 1 POLE 2"}, {"f": "Power Line", "l": "WILLIAMS EST RD 1 POLE 3"}, {"f": "Power Line", "l": "WILLIAMS EST RD 1 POLE 4"}, {"f": "Power Line", "l": "WILLIAMS EST RD 2 POLE 1"}, {"f": "Power Line", "l": "WILLIAMS EST RD 2 POLE 2"}, {"f": "Power Line", "l": "WILLIAMS EST RD 2 POLE 3"}, {"f": "Power Line", "l": "WILLIAMS EST RD 3 POLE 1"}, {"f": "Power Line", "l": "WILLIAMS EST RD 3 POLE 2"}, {"f": "Power Line", "l": "WILLIAMS EST RD 3 POLE 3"}, {"f": "ABEOKUTA EXP.", "l": "ALEXANDRA 1"}, {"f": "ABEOKUTA EXP.", "l": "ALEXANDRA 2"}, {"f": "ABEOKUTA EXP.", "l": "QUEENS MEALS"}, {"f": "Tabon Tabon", "l": "SORETIRE STREET"}, {"f": "Tabon Tabon", "l": "OJA OBA"}, {"f": "Tabon Tabon", "l": "IREPODUN STREET"}, {"f": "Power Line", "l": "YEKINI STREET POLE 1"}, {"f": "Power Line", "l": "YEKINI STREET POLE 2"}, {"f": "Pen Cinema", "l": "ADALEMO STREET POLE 1"}, {"f": "Pen Cinema", "l": "ADALEMO STREET POLE 2"}, {"f": "Pen Cinema", "l": "ADEJOBI STREET POLE 1"}, {"f": "Pen Cinema", "l": "ADEJOBI STREET POLE 2"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 1"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 2"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 3"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 4"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 5"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 6"}, {"f": "Pen Cinema", "l": "AGUNBIADE STREET POLE 7"}, {"f": "Pen Cinema", "l": "AMOO STREET POLE 1"}, {"f": "Pen Cinema", "l": "AMOO STREET POLE 2"}, {"f": "Pen Cinema", "l": "AMOO STREET POLE 3"}, {"f": "Pen Cinema", "l": "AMOO STREET POLE 4"}, {"f": "Pen Cinema", "l": "AMOO STREET POLE 5"}, {"f": "Pen Cinema", "l": "AYANWALE STREET POLE 1"}, {"f": "Pen Cinema", "l": "EDEYOKUN OLUGBENGA GABRIEL"}, {"f": "Pen Cinema", "l": "GBADAMOSHI STREET POLE 1"}, {"f": "Pen Cinema", "l": "GBADAMOSHI STREET POLE 2"}, {"f": "Pen Cinema", "l": "GBADAMOSHI STREET POLE 3"}, {"f": "Pen Cinema", "l": "GBADAMOSHI STREET POLE 4"}, {"f": "Pen Cinema", "l": "IBIDO STR POLE 1"}, {"f": "Pen Cinema", "l": "IBIDO STR POLE 2"}, {"f": "Pen Cinema", "l": "IBIDO STR POLE 3"}, {"f": "Pen Cinema", "l": "IPAJA RD POLE 1"}, {"f": "Pen Cinema", "l": "IPAJA RD POLE 2"}, {"f": "Pen Cinema", "l": "IPAJA RD POLE 3"}, {"f": "Pen Cinema", "l": "IPAJA RD POLE 4"}, {"f": "Pen Cinema", "l": "IPAJA RD POLE 5"}, {"f": "Pen Cinema", "l": "OREMEJI STREET POLE 1"}, {"f": "Pen Cinema", "l": "OREMEJI STREET POLE 2"}, {"f": "Tabon Tabon", "l": "12 OSHODI STREET"}, {"f": "Tabon Tabon", "l": "8 AKINLAGUN"}, {"f": "Tabon Tabon", "l": "8 ALHAJI OLADIPUPO"}, {"f": "Tabon Tabon", "l": "ADAMO KABIAWU POLE 1"}, {"f": "Tabon Tabon", "l": "ADAMO KABIAWU POLE 2"}, {"f": "Tabon Tabon", "l": "ADAMO KABIAWU POLE 3"}, {"f": "Tabon Tabon", "l": "ADAMO KABIAWU POLE 4"}, {"f": "Tabon Tabon", "l": "ADEBARI POLE 1"}, {"f": "Tabon Tabon", "l": "ADEBARI POLE 2"}, {"f": "Tabon Tabon", "l": "ADEBOYE POLE 1"}, {"f": "Tabon Tabon", "l": "ADEBOYE POLE 2"}, {"f": "Tabon Tabon", "l": "ADEMOLU STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ADENIJI ELERU POLE 1"}, {"f": "Tabon Tabon", "l": "ADENIJI ELERU POLE 2"}, {"f": "Tabon Tabon", "l": "ADENIJI STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ADENIJI STREET POLE 2"}, {"f": "Tabon Tabon", "l": "ADENIJI STREET POLE 3"}, {"f": "Tabon Tabon", "l": "ADENIJI STREET POLE 4"}, {"f": "Tabon Tabon", "l": "ADENIJI STREET POLE 5"}, {"f": "Tabon Tabon", "l": "ADESHINA POLE 1"}, {"f": "Tabon Tabon", "l": "ADESHINA POLE 2"}, {"f": "Tabon Tabon", "l": "ADESHINA POLE 3"}, {"f": "Tabon Tabon", "l": "ADEWALE ADEDEJI ADESANYA"}, {"f": "Tabon Tabon", "l": "ADIKATU POLE 1"}, {"f": "Tabon Tabon", "l": "ADIKATU POLE 2"}, {"f": "Tabon Tabon", "l": "ADIKATU POLE 3"}, {"f": "Tabon Tabon", "l": "AFUWAPE STREET POLE 1"}, {"f": "Tabon Tabon", "l": "AFUWAPE STREET POLE 2"}, {"f": "Tabon Tabon", "l": "AFUWAPE STREET POLE 3"}, {"f": "Tabon Tabon", "l": "AGBOJINU 3"}, {"f": "Tabon Tabon", "l": "AKINDELU STREET POLE 1"}, {"f": "Tabon Tabon", "l": "AKINDELU STREET POLE 2"}, {"f": "Abattoir", "l": "LAGOS HOMS 1"}, {"f": "Abattoir", "l": "LAGOS HOMS 2"}, {"f": "T1Maplewood", "l": "MAPPLE WOOD EST 1"}, {"f": "T1Maplewood", "l": "MAPPLE WOOD EST 2"}, {"f": "T1Maplewood", "l": "MAPPLE WOOD EST 3"}, {"f": "T1Maplewood", "l": "MAPPLE WOOD EST 4"}, {"f": "Abule Egba", "l": "KUMULUYI STREET POLE 3"}, {"f": "Abule Egba", "l": "KUMULUYI STREET POLE 4"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 1"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 2"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 3"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 4"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 5"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 6"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 7"}, {"f": "Abule Egba", "l": "LABAK EST(SYLVAT AVE) POLE 8"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 1"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 2"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 3"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 4"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 5"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 6"}, {"f": "Abule Egba", "l": "LABAK EST(TIMOTHY BABATUNDE) POLE 7"}, {"f": "Abule Egba", "l": "LADOJE ST POLE 1"}, {"f": "Abule Egba", "l": "LADOJE ST POLE 2"}, {"f": "Abule Egba", "l": "LADOJE ST POLE 3"}, {"f": "Abule Egba", "l": "LADOJE ST POLE 4"}, {"f": "Abule Egba", "l": "LADOJE ST POLE 5"}, {"f": "Abule Egba", "l": "LADOJE ST(MARKET LANE) POLE 1"}, {"f": "Abule Egba", "l": "LADOJE ST(MARKET LANE) POLE 2"}, {"f": "Abule Egba", "l": "LADOJE ST(MARKET LANE) POLE 3"}, {"f": "Abule Egba", "l": "LADOJE ST(MARKET LANE) POLE 4"}, {"f": "Abattoir", "l": "LANRE IBITOYE STREET POLE 1"}, {"f": "Abattoir", "l": "LANRE IBITOYE STREET POLE 2"}, {"f": "Abattoir", "l": "LANRE IBITOYE STREET POLE 3"}, {"f": "Abule Egba", "l": "OKO OBA SCHEME 1C"}, {"f": "Abule Egba", "l": "OKO-OBA ROAD POLE 1"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 1"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 2"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 3"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 4"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 5"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 6"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 7"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 8"}, {"f": "Abule Egba", "l": "OLD ABEOKUTA RD POLE 9"}, {"f": "Abattoir", "l": "OLUBIYI FAYINTO STREET POLE 1"}, {"f": "Abattoir", "l": "OLUBIYI FAYINTO STREET POLE 2"}, {"f": "Abattoir", "l": "OLUBIYI FAYINTO STREET POLE 3"}, {"f": "Abattoir", "l": "OLUBIYI FAYINTO STREET POLE 4"}, {"f": "Abattoir", "l": "OLUBIYI FAYINTO STREET POLE 5"}, {"f": "Abattoir", "l": "OLUKAYODE ADEGBOYEGA STR., POLE 1"}, {"f": "Abattoir", "l": "OLUKAYODE ADEGBOYEGA STR., POLE 2"}, {"f": "Abattoir", "l": "OLUKAYODE ADEGBOYEGA STR., POLE 3"}, {"f": "Abattoir", "l": "OLUKAYODE ADEGBOYEGA STR., POLE 4"}, {"f": "Abattoir", "l": "OLUSOLA OLAWALE STR POLE 1"}, {"f": "Abattoir", "l": "OLUSOLA OLAWALE STR POLE 2"}, {"f": "Abattoir", "l": "OLUSOLA OLAWALE STR POLE 3"}, {"f": "Abattoir", "l": "OLUSOLA OLAWALE STR POLE 4"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 1"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 2"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 3"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 4"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 5"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 6"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 7"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 8"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 9"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 10"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 11"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 12"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 13"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 14"}, {"f": "Abattoir", "l": "PIPELINE STREET POLE 15"}, {"f": "Abattoir", "l": "POPOOLA CLOSE POLE 1"}, {"f": "Orile Agege", "l": "OLAROKUN STR"}, {"f": "Orile Agege", "l": "ORILE ROAD"}, {"f": "Pen Cinema", "l": "IPAJA ROAD 500KVA"}, {"f": "Abattoir", "l": "SINA OGUNBAMBO"}, {"f": "Abattoir", "l": "BADRU TAJUDEEN ISHOLA"}, {"f": "Orile Agege", "l": "OWOLABI 1"}, {"f": "Orile Agege", "l": "OWOLABI 2"}, {"f": "Orile Agege", "l": "ORILE RD POLE 2"}, {"f": "Orile Agege", "l": "ORILE RD POLE 3 (METHODIST CHURCH)"}, {"f": "Orile Agege", "l": "ORILE ROAD POLE 1(UNIQUE HOTEL)"}, {"f": "Orile Agege", "l": "ORILE ROAD POLE 4"}, {"f": "Orile Agege", "l": "ORILE ROAD POLE 6"}, {"f": "Orile Agege", "l": "ORILE ROAD POLE 7"}, {"f": "Orile Agege", "l": "ORILE ROAD POLE 8"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 1"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 2"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 3"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 4"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 5"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 6"}, {"f": "Orile Agege", "l": "OSHOBU STREET POLE 7"}, {"f": "Orile Agege", "l": "OTA ROAD POLE 1"}, {"f": "Orile Agege", "l": "OTA ROAD POLE 2"}, {"f": "Orile Agege", "l": "OWOLABI OMOTOYE ST POLE 1"}, {"f": "Orile Agege", "l": "OWOLEWA POLE 4"}, {"f": "Orile Agege", "l": "OWOLEWA STREET POLE 1"}, {"f": "Orile Agege", "l": "OWOLEWA STREET POLE 2"}, {"f": "Orile Agege", "l": "OWOLEWA STREET POLE 3"}, {"f": "Orile Agege", "l": "OWOLEWA STREET POLE 5"}, {"f": "Orile Agege", "l": "POWERLINE OFF AJIBOYE STR POLE 1"}, {"f": "Orile Agege", "l": "POWERLINE OFF AJIBOYE STR POLE 2"}, {"f": "Orile Agege", "l": "POWERLINE STREET POLE 1"}, {"f": "Orile Agege", "l": "SALAU STREET POLE 1"}, {"f": "Orile Agege", "l": "SALAU STREET POLE 2"}, {"f": "Orile Agege", "l": "SOPE TIE STREET POLE 1"}, {"f": "Orile Agege", "l": "SOPE TIE STREET POLE 2"}, {"f": "Power Line", "l": "1, SHOMOYE STREET"}, {"f": "Power Line", "l": "12, COKER STREET"}, {"f": "Power Line", "l": "15, OLADAPO TOMOLOJU CLOSE"}, {"f": "Power Line", "l": "20, C0KER STREET"}, {"f": "Power Line", "l": "27, SHOMOYE STREET"}, {"f": "Power Line", "l": "4, OLADAPO TOMOLOJU CLOSE"}, {"f": "Power Line", "l": "47, OMOTOYE STREET"}, {"f": "Power Line", "l": "6, DADDY ONIYIDE STREET"}, {"f": "Power Line", "l": "7,SHOMOYE STREET"}, {"f": "Power Line", "l": "9, AKANI ONIYIDE STREET"}, {"f": "Power Line", "l": "ADEBAYO STREET POLE 1"}, {"f": "Power Line", "l": "ADEBAYO STREET POLE 2"}, {"f": "Power Line", "l": "ADEYINKA STREET POLE 1"}, {"f": "Power Line", "l": "ADEYINKA STREET POLE 2"}, {"f": "Power Line", "l": "AJAYI IBE STREET POLE 1"}, {"f": "Power Line", "l": "AJAYI IBE STREET POLE 2"}, {"f": "Power Line", "l": "AJAYI IBE STREET POLE 3"}, {"f": "Power Line", "l": "AJAYI IBE STREET POLE 4"}, {"f": "Power Line", "l": "AJAYI IBE STREET POLE 5"}, {"f": "Power Line", "l": "AKINLABI STREET POLE 1"}, {"f": "Power Line", "l": "AKINLABI STREET POLE 2"}, {"f": "Power Line", "l": "AKINLABI STREET POLE 3"}, {"f": "Power Line", "l": "AMINATU LANE POLE 1"}, {"f": "Power Line", "l": "AMOO STREET POLE 1"}, {"f": "Power Line", "l": "AMOO STREET POLE 2"}, {"f": "Power Line", "l": "AMOO STREET POLE 3"}, {"f": "Power Line", "l": "AMOO STREET POLE 4"}, {"f": "Power Line", "l": "AMOO STREET POLE 5"}, {"f": "Power Line", "l": "AMOO STREET POLE 6"}, {"f": "Power Line", "l": "AMOO STREET POLE 7"}, {"f": "Power Line", "l": "AMOO STREET POLE 8"}, {"f": "Power Line", "l": "AMOO STREET POLE 9"}, {"f": "Power Line", "l": "ANU OLUWAPO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "IDOWU STREET POLE 1"}, {"f": "Tabon Tabon", "l": "IDOWU STREET POLE 2"}, {"f": "Tabon Tabon", "l": "IDOWU STREET POLE 3"}, {"f": "Tabon Tabon", "l": "IDOWU STREET POLE 4"}, {"f": "Tabon Tabon", "l": "IFELODUN STREET POLE 1"}, {"f": "Tabon Tabon", "l": "IFELODUN STREET POLE 2"}, {"f": "Tabon Tabon", "l": "IFELODUN STREET POLE 3"}, {"f": "Tabon Tabon", "l": "IFELODUN STREET POLE 4"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 1"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 2"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 3"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 4"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 5"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 6"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 7"}, {"f": "Tabon Tabon", "l": "IFELOJU STREET POLE 8"}, {"f": "Tabon Tabon", "l": "ILOBU POLE 1"}, {"f": "Tabon Tabon", "l": "ILOBU POLE 2"}, {"f": "Tabon Tabon", "l": "ILOBU POLE 3"}, {"f": "Tabon Tabon", "l": "IREPODUN STREET POLE 2"}, {"f": "Tabon Tabon", "l": "IREPODUN STREET POLE 3"}, {"f": "Tabon Tabon", "l": "ISIAKA STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ISIAKA STREET POLE 2"}, {"f": "Tabon Tabon", "l": "ISIAKA STREET POLE 3"}, {"f": "Tabon Tabon", "l": "ISIAKA STREET POLE 4"}, {"f": "Tabon Tabon", "l": "IYANDA FALOLA STREET POLE 1"}, {"f": "Tabon Tabon", "l": "IYANDA FALOLA STREET POLE 2"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 1"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 2"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 3"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 4"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 5"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 6"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 7"}, {"f": "Tabon Tabon", "l": "JAMES OKIKI POLE 8"}, {"f": "Tabon Tabon", "l": "JUBILEE POLE 1"}, {"f": "Tabon Tabon", "l": "LADIPO STREET POLE 1"}, {"f": "Tabon Tabon", "l": "LADIPO STREET POLE 2"}, {"f": "Tabon Tabon", "l": "LADIPO STREET POLE 3"}, {"f": "Tabon Tabon", "l": "MABAYOJE STRRT POLE 1"}, {"f": "Tabon Tabon", "l": "MABAYOJE STRRT POLE 2"}, {"f": "Tabon Tabon", "l": "MABAYOJE STRRT POLE 3"}, {"f": "Tabon Tabon", "l": "MUSILI STREET POLE 1"}, {"f": "Tabon Tabon", "l": "MUSILI STREET POLE 2"}, {"f": "Tabon Tabon", "l": "MUSILI STREET POLE 3"}, {"f": "Tabon Tabon", "l": "MUSILI STREET POLE 4"}, {"f": "Tabon Tabon", "l": "MUSILI STREET POLE 5"}, {"f": "Tabon Tabon", "l": "ODUTOLA STREET POLE 1"}, {"f": "Tabon Tabon", "l": "ODUTOLA STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OGUNDELE STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OGUNDELE STREET POLE 2"}, {"f": "Tabon Tabon", "l": "OGUNDELE STREET POLE 3"}, {"f": "Tabon Tabon", "l": "OGUNDELE STREET POLE 4"}, {"f": "Tabon Tabon", "l": "OGUNDELE STREET POLE 5"}, {"f": "Tabon Tabon", "l": "OGUNTADE STREET POLE 1"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 1"}, {"f": "Tabon Tabon", "l": "OKO OBA POLE 10"}];
+
+// ── FEEDER COLOURS ────────────────────────────────────────────────────────────
+const FC={"Abattoir":"#C0392B","Abule Egba":"#1A5CA8","Orile Agege":"#00843D","Tabon Tabon":"#E8A000","Pen Cinema":"#7C3AED","Power Line":"#0891B2","Arigbanla":"#D97706","NYSC":"#059669","T1Maplewood":"#DB2777","ABEOKUTA EXP.":"#64748B","Custom":"#888","Various":"#7C3AED"};
+const fdot=f=>`<span class="fdot" style="background:${FC[f]||'#888'}"></span>`;
+
+// ── SEED DATA (from your supervisor / gang table) ─────────────────────────────
+const SEED_STAFF=["Omotosho","David","Olayinka","Seyi","Akeem","Tunji","Sanusi","Femi","Odunayo","Kayode","Owoeye","Fatai","Sulaimon","Afeez","Wale","Iboro","Hammed","Martins"];
+const SEED_GANGS=[
+  {sup:"Amaka",staff:["Omotosho","David"],locs:["Amoo","Yekini","Ibido","Ipaja hvds","Iyana Odo 1","Aige"]},
+  {sup:"Esther Obi",staff:["Olayinka","Seyi"],locs:["Ajiboye Street","Kasunmu","Niger West"]},
+  {sup:"Esther Okon",staff:["Akeem","Tunji"],locs:["Orile Road","Bade Abiona","Lasisi","Ayanwale"]},
+  {sup:"Mabel",staff:["Sanusi","Femi"],locs:["Odutola","Araromi","Alafia","Ladipo","Isiaka","Esuola","Temidire","Tunde davvis","Mabayoje","Popoola"]},
+  {sup:"Prince",staff:["Odunayo","Kayode"],locs:["Fagbola","Amoo 500","Amoo hvds","Jobak","Dada Akapo","Balogun"]},
+  {sup:"",staff:["Owoeye","Fatai"],locs:["Alaagba estate","Scheme 1"]},
+  {sup:"",staff:["Sulaimon","Afeez"],locs:["Ashipa DT"]},
+  {sup:"",staff:["Wale","Iboro"],locs:["Salem 500"]},
+  {sup:"",staff:["Hammed","Martins"],locs:[]}
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let logs=[];
+let gangs=[];   // now loaded FROM THE SHEET on startup — see loadLogs()
+let staff=[];   // same
+// (gangsLoaded variable removed — it was never read anywhere, dead code from an earlier draft)
+let currentRole='';
+let selectedLocs=[];
+let acIndex=-1;
+let acFiltered=[];
+let sortCol='date';
+let sortDir='desc';
+let pendingImport=null;
+let ngSelectedStaff=[];
+let ngStaffAcFiltered=[];
+let ngStaffAcIndex=-1;
+
+function staffName(id){const s=staff.find(x=>x.id===id);return s?s.name:'?';}
+function gangStaffNames(g){return g.staffIds.map(staffName).join(' & ');}
+
+// One-time seeding: if the Sheet's Staff/Gangs tabs are empty (first ever run),
+// push the known starting roster up to the Sheet so everyone sees the same
+// thing from day one. If gangs/staff already exist on the Sheet, this does
+// nothing — the Sheet is the source of truth from then on, never localStorage.
+async function seedIfEmpty(){
+  if(staff.length===0){
+    for(let i=0;i<SEED_STAFF.length;i++){
+      const name=SEED_STAFF[i];
+      const id='s'+i+'_seed';
+      staff.push({id,name,role:i%2===0?'Linesman':'Linesmate'});
+      await apiPost({action:'saveStaff',id,name,role:staff[staff.length-1].role});
+    }
+  }
+  if(gangs.length===0){
+    for(let i=0;i<SEED_GANGS.length;i++){
+      const g=SEED_GANGS[i];
+      const gangLabel=g.staff.join(' & ');
+      const staffIds=g.staff.map(n=>{
+        const found=staff.find(s=>s.name.toLowerCase()===n.toLowerCase());
+        return found?found.id:null;
+      }).filter(Boolean);
+      if(staffIds.length<2) continue;
+      const id='g'+i+'_seed';
+      const gangObj={id,name:gangLabel,supervisor:g.sup,staffIds,homeLocations:g.locs};
+      gangs.push(gangObj);
+      await apiPost({
+        action:'saveGang',id,name:gangLabel,supervisor:g.sup,
+        staffIds:staffIds.join('|'),homeLocations:g.locs.join('|')
+      });
+    }
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  const sevenAgo=new Date(Date.now()-7*86400000).toISOString().slice(0,10);
+  document.getElementById('headerDate').textContent=
+    now.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('logDate').value=today;
+  document.getElementById('logTime').value=now.toTimeString().slice(0,5);
+  document.getElementById('summaryDate').value=today;
+  // coverage map defaults to last 7 days so it shows something useful immediately
+  document.getElementById('coverageFrom').value=sevenAgo;
+  document.getElementById('coverageTo').value=today;
+  populateGangDropdown();
+  renderStaffList();
+  renderGangGrid();
+  renderOrgTree();
+  renderWhatHappenedGrid();
+  loadLogs();
+  restoreLastGang();
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.ac-wrap')){closeAC();closeNgStaffAC();}
+  });
+  startAutoSync();
+});
+
+// ── AUTO-SYNC ─────────────────────────────────────────────────────────────────
+// Polls the Sheet every 20s so a gang/log added on someone else's device shows
+// up here without anyone needing to remember to hit Refresh. Pauses while a
+// form is actively being typed into, so it never wipes out unsaved work —
+// and pauses entirely when the tab isn't visible, to avoid hammering the
+// Sheet from devices left open in the background. Background syncs are
+// SILENT by design: a slow or momentarily-failed background check is not
+// the user's problem and should never interrupt them with an alarming
+// error message. Only an action the user directly took (Save, Approve,
+// manual Refresh) is allowed to show an error — because only those have
+// something the user can actually do about it.
+let autoSyncTimer=null;
+let consecutiveSyncFailures=0;
+function startAutoSync(){
+  if(autoSyncTimer) clearInterval(autoSyncTimer);
+  autoSyncTimer=setInterval(quietBackgroundSync,45000);
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden) quietBackgroundSync(); // catch up when the tab regains focus
+  });
+}
+async function quietBackgroundSync(){
+  if(document.hidden) return;
+  if(isUserActivelyTyping()) return;
+  const t0=performance.now();
+  try{
+    const r=await fetch(API+'?t='+Date.now(),{cache:'no-store'});
+    const data=await r.json();
+    recordPerf('background sync','quietBackgroundSync',Math.round(performance.now()-t0),!!data.success);
+    if(data.success){
+      applyLoadedData(data);
+      consecutiveSyncFailures=0;
+      setLiveStatus('connected');
+    }else{
+      consecutiveSyncFailures++;
+      setLiveStatus(consecutiveSyncFailures>=2?'stale':'connected');
+    }
+  }catch(e){
+    recordPerf('background sync','quietBackgroundSync',Math.round(performance.now()-t0),false);
+    // a background sync failing is normal on a flaky connection — never
+    // alarm the user for this, just quietly note the data may be a little
+    // behind and try again next interval
+    consecutiveSyncFailures++;
+    setLiveStatus(consecutiveSyncFailures>=2?'stale':'connected');
+  }
+}
+function setLiveStatus(state){
+  const el=document.getElementById('liveStatus');
+  if(!el)return;
+  if(state==='connected'){
+    el.innerHTML='🟢 Live';
+    el.title='Up to date as of the last sync';
+  }else{
+    el.innerHTML='🟡 Reconnecting…';
+    el.title="Having trouble reaching the server — your saved data is safe, this will catch up automatically";
+  }
+}
+function isUserActivelyTyping(){
+  const el=document.activeElement;
+  if(!el) return false;
+  const tag=el.tagName;
+  return tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT';
+}
+
+// ── "WHAT'S HAPPENING" — plain-language choice, maps to activity+status behind the scenes ──
+// Four activities only — what actually happens in the field.
+// Multi-select: a gang can do Cash Drive AND Visitation in one outing.
+// Status always starts as "In Progress" — auto-flips to Completed after 48hrs.
+const ACTIVITIES=[
+  {label:'💰 Cash Drive',   value:'Cash Drive'},
+  {label:'🏘 Visitation',   value:'Visitation'},
+  {label:'📊 Reading Meter',value:'Meter Reading'},
+  {label:'🛠 DT Maintenance',value:'DT Maintenance'},
+];
+let selectedActivities=new Set(['Cash Drive']); // default: Cash Drive pre-selected
+function renderWhatHappenedGrid(){
+  const el=document.getElementById('whatHappenedGrid');
+  el.innerHTML=ACTIVITIES.map((a,i)=>{
+    const on=selectedActivities.has(a.value);
+    return`<div onclick="toggleActivity('${a.value}')" id="wh-${i}"
+      style="padding:11px 10px;border:2px solid ${on?'var(--green)':'var(--border)'};border-radius:10px;cursor:pointer;font-size:13px;text-align:center;font-weight:600;background:${on?'var(--green-light)':'#fff'};transition:.15s;user-select:none">
+      ${a.label}${on?'<div style="font-size:9px;color:var(--green-dark);margin-top:2px">✓ selected</div>':''}
+    </div>`;
+  }).join('');
+}
+function toggleActivity(value){
+  if(selectedActivities.has(value)){
+    if(selectedActivities.size===1) return; // always keep at least one
+    selectedActivities.delete(value);
+  }else{
+    selectedActivities.add(value);
+  }
+  renderWhatHappenedGrid();
+}
+function getSelectedActivities(){
+  return [...selectedActivities].join(' + ');
+}
+function resetActivities(){
+  selectedActivities=new Set(['Cash Drive']);
+  renderWhatHappenedGrid();
+}
+
+// ── ADVANCED PANEL TOGGLE ──────────────────────────────────────────────────────
+function toggleAdvanced(){
+  const panel=document.getElementById('advancedPanel');
+  const arrow=document.getElementById('advArrow');
+  const open=panel.style.display!=='none';
+  panel.style.display=open?'none':'block';
+  arrow.textContent=open?'▸':'▾';
+}
+
+// ── GANG MEMORY — remembers the last gang used in THIS browser, across sessions ──
+function restoreLastGang(){
+  const lastId=localStorage.getItem('ie_last_gang_id');
+  if(lastId && gangs.find(g=>g.id===lastId)){
+    selectGangForLog(lastId);
+  }
+}
+function rememberGang(gangId){
+  localStorage.setItem('ie_last_gang_id',gangId);
+}
+
+// ── GANG PICKER MODAL ──────────────────────────────────────────────────────────
+function openGangPicker(){
+  document.getElementById('gangPickerSearch').value='';
+  renderGangPickerList();
+  document.getElementById('gangPickerModal').style.display='flex';
+  setTimeout(()=>document.getElementById('gangPickerSearch').focus(),50);
+}
+function closeGangPicker(e){
+  if(e&&e.target!==document.getElementById('gangPickerModal'))return;
+  document.getElementById('gangPickerModal').style.display='none';
+}
+function renderGangPickerList(){
+  const q=(document.getElementById('gangPickerSearch').value||'').toLowerCase();
+  const lastId=localStorage.getItem('ie_last_gang_id');
+  const el=document.getElementById('gangPickerList');
+  let list=gangs.filter(g=>gangStaffNames(g).toLowerCase().includes(q));
+  // last-used gang floats to the top as a convenience
+  list.sort((a,b)=>(b.id===lastId?1:0)-(a.id===lastId?1:0));
+  if(!list.length){
+    el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px;text-align:center">No gangs match — add one in the Team tab</div>';
+    return;
+  }
+  el.innerHTML=list.map(g=>{
+    const lastSup=lastSupervisorForGang(g.id,gangStaffNames(g));
+    return`<div onclick="selectGangForLog('${g.id}');closeGangPicker()" style="padding:12px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px" onmouseover="this.style.background='var(--green-light)'" onmouseout="this.style.background='#fff'">
+      <div>
+        <div style="font-weight:600;font-size:14px">${gangStaffNames(g)}</div>
+        <div style="font-size:11px;color:var(--muted)">${lastSup?'Last reported to '+lastSup:'No history yet'}</div>
+      </div>
+      ${g.id===lastId?'<span class="badge bg-g">last used</span>':''}
+    </div>`;
+  }).join('');
+}
+function selectGangForLog(gangId){
+  document.getElementById('gangSelect').value=gangId;
+  onGangChange();
+  rememberGang(gangId);
+  const g=gangs.find(x=>x.id===gangId);
+  const display=document.getElementById('gangChipDisplay');
+  if(g){
+    display.style.borderStyle='solid';
+    display.style.borderColor='var(--green)';
+    display.style.color='var(--text)';
+    display.style.background='var(--green-light)';
+    display.innerHTML=`<span style="font-size:20px">👷</span><span><strong>${gangStaffNames(g)}</strong> <span style="font-size:11px;color:var(--muted)">— tap to change</span></span>`;
+  }
+}
+
+
+// ── GOOGLE SHEETS API ─────────────────────────────────────────────────────────
+function syncStart(msg){document.getElementById('syncMsg').textContent=msg||'Syncing…';document.getElementById('syncBar').classList.add('show');}
+function syncEnd(){document.getElementById('syncBar').classList.remove('show');}
+
+function normalizeDateValue(v){
+  // The Sheet SHOULD return a plain "YYYY-MM-DD" string, but if Sheets ever
+  // auto-converted a date-looking cell into a real Date, Apps Script hands
+  // it back as a full ISO timestamp (e.g. "2026-06-15T00:00:00.000Z") or, in
+  // rarer cases, a Sheets serial date number. Normalize all of these back to
+  // plain "YYYY-MM-DD" so every date comparison in the app keeps working
+  // regardless of what actually came out of the Sheet.
+  if(v===null||v===undefined||v==='') return '';
+  const s=String(v);
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; // already correct
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s)) return s.slice(0,10); // ISO timestamp
+  const parsed=new Date(s);
+  if(!isNaN(parsed.getTime())) return parsed.toISOString().slice(0,10); // anything else parseable
+  return s; // give up gracefully rather than silently dropping the row
+}
+
+function applyLoadedData(data){
+  logs=data.data.filter(row=>row.ID!==undefined && String(row.ID).trim()!=='').map(row=>{
+    const locStr=String(row.Locations||'');
+    const feedStr=String(row.Feeders||'');
+    let locations=[];
+    if(locStr){
+      const locs=locStr.split(' | ');
+      const feeds=feedStr.split(' | ');
+      locations=locs.map((l,i)=>({l:l.trim(),f:(feeds[i]||feeds[0]||'Custom').trim()}));
+    }
+    return{
+      id:String(row.ID),date:normalizeDateValue(row.Date),time:String(row.Time||''),
+      supervisor:String(row.Supervisor||''),gang:String(row.Gang||''),
+      linesman:String(row.Linesman||''),linesmate:String(row.Linesmate||''),
+      locations,activity:String(row.Activity||''),status:String(row.Status||''),
+      notes:String(row.Notes||''),
+      approvalStatus:String(row.ApprovalStatus||'Approved'),
+      approvedBy:String(row.ApprovedBy||'')
+    };
+  });
+  staff=(data.staff||[]).filter(row=>row.ID).map(row=>({
+    id:String(row.ID),name:String(row.Name||''),role:String(row.Role||'Linesman')
+  }));
+  gangs=(data.gangs||[]).filter(row=>row.ID).map(row=>({
+    id:String(row.ID),name:String(row.Name||''),
+    supervisor:String(row.Supervisor||''),
+    staffIds:String(row.StaffIDs||'').split('|').filter(Boolean),
+    homeLocations:String(row.HomeLocations||'').split('|').filter(Boolean)
+  }));
+  // 48-hour auto-complete: any "In Progress" entry older than 48hrs
+  // silently flips to Completed — unless a privileged user explicitly
+  // left it In Progress (we don't track that distinction yet, so we
+  // auto-complete everything over the threshold). This runs in the
+  // background after every load, with no toast or spinner.
+  autoComplete48hrs();
+  updateStats();renderTodayList();renderRecords();renderAnalytics();renderSummary();
+  populateGangDropdown();renderGangGrid();renderOrgTree();renderStaffList();
+  updatePendingBadge();
+  if(canApprove()) renderApprovals();
+}
+
+function autoComplete48hrs(){
+  const now=Date.now();
+  const THRESHOLD=48*60*60*1000; // 48 hours in ms
+  const toFlip=logs.filter(l=>{
+    if(l.status!=='In Progress') return false;
+    // parse the log's creation timestamp from its ID (which is Date.now() at save time)
+    const savedAt=parseInt(l.id);
+    if(isNaN(savedAt)) return false;
+    return (now-savedAt)>THRESHOLD;
+  });
+  if(!toFlip.length) return;
+  // fire-and-forget: update each qualifying entry in the Sheet silently
+  toFlip.forEach(async l=>{
+    l.status='Completed'; // update local state immediately
+    try{
+      await apiPost({action:'update',id:l.id,status:'Completed',
+        notes:(l.notes?l.notes+'\n':'')+'[Auto-completed after 48hrs]'});
+    }catch(e){/* silent — will retry on next load */}
+  });
+}
+
+async function loadLogs(){
+  syncStart('Loading records from Google Sheets…');
+  const t0=performance.now();
+  try{
+    const r=await fetch(API+'?t='+Date.now(),{cache:'no-store'});
+    const data=await r.json();
+    recordPerf('read','loadLogs',Math.round(performance.now()-t0),!!data.success);
+    if(data.success){
+      applyLoadedData(data);
+      if(staff.length===0 || gangs.length===0){
+        syncStart('Setting up the starting team roster…');
+        await seedIfEmpty();
+        applyLoadedData(data); // re-render now that the roster exists
+      }
+      setLiveStatus('connected');
+      consecutiveSyncFailures=0;
+    }else{
+      toast('Could not load records right now — will keep trying in the background','warn');
+      setLiveStatus('stale');
+    }
+  }catch(e){
+    recordPerf('read','loadLogs',Math.round(performance.now()-t0),false);
+    // even the manual/initial load shouldn't sound an alarm — explain plainly
+    // and calmly, and let the background sync keep trying on its own
+    toast("Couldn't reach the server just now — it'll keep trying automatically. Your saved data is safe.",'warn');
+    setLiveStatus('stale');
+    console.error(e);
+  }
+  syncEnd();
+}
+
+// ── PERFORMANCE MEASUREMENT ───────────────────────────────────────────────────
+// Keeps the last 50 timed operations in memory only (never saved anywhere,
+// resets on refresh) so you can see, with real numbers, whether Google
+// Sheets is keeping up — rather than guessing from how it "feels."
+let perfLog=[];
+function recordPerf(kind,label,ms,ok){
+  perfLog.unshift({kind,label,ms,ok,at:new Date().toLocaleTimeString()});
+  if(perfLog.length>50) perfLog.pop();
+  if(typeof renderPerfPanel==='function') renderPerfPanel();
+}
+function clearPerfLog(){perfLog=[];renderPerfPanel();}
+
+// ── RAW DATA DIAGNOSTIC ───────────────────────────────────────────────────────
+// Fetches directly from the Sheet and reports, in plain language, exactly
+// what came back — so a "why don't I see my records" question can be
+// answered with facts instead of theories about what might be wrong.
+async function runDiagnostic(){
+  const out=document.getElementById('diagOutput');
+  out.textContent='Checking…';
+  try{
+    const r=await fetch(API+'?t='+Date.now(),{cache:'no-store'});
+    const raw=await r.text();
+    let data;
+    try{ data=JSON.parse(raw); }
+    catch(e){
+      out.textContent=`⚠ The server did not return valid JSON at all.\n\nThis usually means the Apps Script itself is throwing an error before it can respond, or the deployment URL is pointing somewhere unexpected.\n\nRaw response (first 1000 characters):\n${raw.slice(0,1000)}`;
+      return;
+    }
+    if(!data.success){
+      out.textContent=`⚠ The server responded but reported an error:\n\n${data.error||'(no error message provided)'}\n\nThis is coming directly from your Apps Script's own error handling.`;
+      return;
+    }
+    const rows=data.data||[];
+    let report=`✓ Server responded successfully.\n\n`;
+    report+=`Total rows returned for Field Logs: ${rows.length}\n`;
+    report+=`Total rows returned for Staff: ${(data.staff||[]).length}\n`;
+    report+=`Total rows returned for Gangs: ${(data.gangs||[]).length}\n\n`;
+
+    if(rows.length===0){
+      report+=`⚠ Zero log rows came back from the Sheet itself. This means either:\n`;
+      report+=`  • Your "Sheet1" tab is genuinely empty below the header row, or\n`;
+      report+=`  • The SHEET_NAME constant in the Apps Script doesn't match your actual tab name\n\n`;
+      report+=`Go check your Google Sheet directly — if you can see rows there, the problem is in the Apps Script reading the wrong tab.`;
+    }else{
+      const sample=rows[0];
+      const hasID=sample.ID!==undefined && sample.ID!=='';
+      report+=`First row's column names exactly as returned: ${Object.keys(sample).join(', ')}\n\n`;
+      if(!hasID){
+        report+=`⚠ FOUND THE PROBLEM: the first row's "ID" field is ${sample.ID===undefined?'MISSING entirely':'blank'}.\n\n`;
+        report+=`The app only keeps rows that have a non-empty ID — this is what's silently dropping your records. This usually means either:\n`;
+        report+=`  • Column A in your Sheet isn't actually headed exactly "ID" (check for extra spaces or a typo), or\n`;
+        report+=`  • Some existing rows have a blank ID cell\n\n`;
+        report+=`Sample of the actual first row's data:\n${JSON.stringify(sample,null,2)}`;
+      }else{
+        report+=`✓ ID field looks fine on the first row.\n\n`;
+        report+=`Sample of the first 3 rows as the app sees them:\n${JSON.stringify(rows.slice(0,3),null,2)}`;
+      }
+    }
+    out.textContent=report;
+  }catch(e){
+    out.textContent=`⚠ The request itself failed before getting a response at all:\n\n${e.message}\n\nThis points to a network/connectivity issue, or the API URL being wrong, rather than anything inside the Sheet's data.`;
+  }
+}
+function renderPerfPanel(){
+  const verdictEl=document.getElementById('perfVerdict');
+  const bodyEl=document.getElementById('perfTableBody');
+  const emptyEl=document.getElementById('perfEmpty');
+  if(!verdictEl||!bodyEl) return; // panel not in the DOM right now (not on Team page) — nothing to update
+
+  if(!perfLog.length){
+    verdictEl.innerHTML='';
+    bodyEl.innerHTML='';
+    emptyEl.style.display='block';
+    return;
+  }
+  emptyEl.style.display='none';
+
+  const recent=perfLog.slice(0,20);
+  const avg=Math.round(recent.reduce((a,p)=>a+p.ms,0)/recent.length);
+  const failures=recent.filter(p=>!p.ok).length;
+  const slow=recent.filter(p=>p.ms>3000).length;
+
+  let verdict, color;
+  if(failures>=3){
+    verdict=`⚠ ${failures} of the last ${recent.length} requests failed outright. This is a real sign Google Sheets may not be keeping up, or there's a connectivity problem worth investigating.`;
+    color='var(--red)';
+  }else if(avg>2500||slow>=3){
+    verdict=`🟡 Average response time is ${avg}ms, and ${slow} request(s) took over 3 seconds. Usable, but getting slow — worth watching as more people use this.`;
+    color='var(--amber)';
+  }else{
+    verdict=`🟢 Average response time is ${avg}ms across the last ${recent.length} requests, with ${failures} failure(s). Google Sheets is comfortably keeping up right now.`;
+    color='var(--green-dark)';
+  }
+  verdictEl.innerHTML=`<div style="padding:12px 16px;border-radius:8px;background:var(--bg);border-left:4px solid ${color};font-size:13px">${verdict}</div>`;
+
+  bodyEl.innerHTML=perfLog.map(p=>`
+    <tr>
+      <td class="mono" style="font-size:12px">${p.at}</td>
+      <td><span class="badge ${p.kind==='write'?'bg-b':p.kind==='read'?'bg-g':'bg-p'}">${p.kind}</span></td>
+      <td style="font-size:12px">${p.label}</td>
+      <td class="mono" style="font-size:12px;color:${p.ms>3000?'var(--red)':p.ms>1500?'var(--amber)':'var(--green-dark)'}">${p.ms}ms</td>
+      <td>${p.ok?'<span class="badge bg-g">✓ OK</span>':'<span class="badge bg-r">✕ Failed</span>'}</td>
+    </tr>`).join('');
+}
+
+async function apiPost(payload){
+  const t0=performance.now();
+  let ok=true, result;
+  try{
+    const r=await fetch(API,{method:'POST',body:JSON.stringify(payload)});
+    result=await r.json();
+    ok=!!result.success;
+  }catch(e){
+    ok=false;
+    result={success:false,error:'network failure'};
+  }
+  recordPerf('write',payload.action||'unknown',Math.round(performance.now()-t0),ok);
+  return result;
+}
+
+// ── ROLE ──────────────────────────────────────────────────────────────────────
+const LOCKED_ROLES=['um','manager','editor'];
+let verifiedPasswords={}; // { um: 'the password they typed', manager: '...', editor: '...' } — kept only in memory, this tab session
+let pendingRoleSelection='';
+
+function switchRole(r){
+  if(LOCKED_ROLES.includes(r) && !verifiedPasswords[r]){
+    pendingRoleSelection=r;
+    openPwModal(r);
+    return;
+  }
+  applyRole(r);
+}
+
+function applyRole(r){
+  currentRole=r;
+  document.getElementById('roleSelect').value=r;
+  const banner=document.getElementById('roleBanner');
+  if(!r){banner.style.display='none';document.getElementById('tab-approvals').style.display='none';return;}
+  banner.style.display='block';
+  const labels={
+    um:'🏢 Undertaking Manager — Full oversight of all operations 🔒 Verified',
+    manager:'👔 Manager (Operations Manager) — Full access 🔒 Verified',
+    editor:'🛠 Editor — Full administrative access 🔒 Verified',
+    field:'🔧 Field Worker — Log entry mode'
+  };
+  const supName=r.startsWith('sup_')?r.replace('sup_',''):'';
+  banner.textContent=supName?`🦺 Supervisor: ${supName} — Viewing your gangs only`:(labels[r]||r);
+  banner.className='role-banner '+(r==='um'?'rb-um':r==='manager'?'rb-mgr':r==='editor'?'rb-um':supName?'rb-sup':'rb-field');
+  if(supName){
+    document.getElementById('supOverride').value=supName;
+    document.getElementById('aSup').value=supName;
+    populateGangDropdown(supName);
+  } else {
+    populateGangDropdown();
+  }
+  // Only the Undertaking Manager, Mr Rafael, and the Editor can see/act on approvals
+  const can=(r==='um'||r==='manager'||r==='editor');
+  document.getElementById('tab-approvals').style.display=can?'':'none';
+  if(can) renderApprovals();
+  // The backend performance panel is for diagnosing the Sheets backend
+  // itself — that's an Editor concern, not something supervisors or even
+  // Mr Rafael/UM need cluttering their view.
+  const perfCard=document.getElementById('perfPanelCard');
+  if(perfCard){
+    perfCard.style.display=(r==='editor')?'block':'none';
+    if(r==='editor') renderPerfPanel();
+  }
+  const diagCard=document.getElementById('diagPanelCard');
+  if(diagCard) diagCard.style.display=(r==='editor')?'block':'none';
+  renderRecords();renderAnalytics();renderSummary();
+}
+function canApprove(){return['um','manager','editor'].includes(currentRole);}
+function approverLabel(){return{um:'Undertaking Manager',manager:'Manager',editor:'Editor'}[currentRole]||'';}
+
+// ── PASSWORD GATE ──────────────────────────────────────────────────────────────
+function openPwModal(role){
+  const titles={um:'Undertaking Manager — Password Required',manager:'Manager — Password Required',editor:'Editor — Password Required'};
+  document.getElementById('pwModalTitle').textContent=titles[role]||'Password Required';
+  document.getElementById('pwInput').value='';
+  document.getElementById('pwError').style.display='none';
+  document.getElementById('pwModal').style.display='flex';
+  setTimeout(()=>document.getElementById('pwInput').focus(),50);
+}
+function closePwModal(e){
+  if(e&&e.target!==document.getElementById('pwModal'))return;
+  document.getElementById('pwModal').style.display='none';
+  // revert the dropdown to whatever role was actually active (or blank)
+  document.getElementById('roleSelect').value=currentRole||'';
+  pendingRoleSelection='';
+}
+async function submitPassword(){
+  const role=pendingRoleSelection;
+  const pw=document.getElementById('pwInput').value;
+  if(!pw){toast('Enter a password','err');return;}
+  const btn=document.getElementById('pwSubmitBtn');
+  btn.disabled=true;btn.textContent='Checking…';
+  try{
+    const result=await apiPost({action:'verifyPassword',authRole:role,authPassword:pw});
+    if(!result.success){
+      document.getElementById('pwError').style.display='block';
+      btn.disabled=false;btn.textContent='Unlock';
+      return;
+    }
+    verifiedPasswords[role]=pw;
+    document.getElementById('pwModal').style.display='none';
+    applyRole(role);
+    toast('Verified ✓');
+  }catch(e){
+    toast('Network error — could not verify password','err');
+  }
+  btn.disabled=false;btn.textContent='Unlock';
+}
+
+
+// ── PAGES ─────────────────────────────────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  if(id==='records')renderRecords();
+  if(id==='analytics')renderAnalytics();
+  if(id==='summary')renderSummary();
+  if(id==='team'){renderOrgTree();renderGangGrid();renderStaffList();renderPerfPanel();}
+  if(id==='approvals')renderApprovals();
+}
+
+// ── GANG DROPDOWN (Log Entry form) — shows ALL gangs, filterable by supervisor role ──
+function populateGangDropdown(restrictToSup){
+  const sel=document.getElementById('gangSelect');
+  const current=sel.value;
+  sel.innerHTML='<option value="">— Select gang —</option>';
+  let list=gangs.slice();
+  // group by LAST-KNOWN supervisor (from log history), not a fixed property —
+  // any gang can be picked regardless of who they last reported to
+  const lastSupOf=g=>lastSupervisorForGang(g.id,gangStaffNames(g))||'No history yet';
+  if(restrictToSup) list=list.filter(g=>lastSupOf(g)===restrictToSup);
+  if(!list.length){
+    const o=document.createElement('option');
+    o.value='';o.disabled=true;
+    o.textContent=restrictToSup?'No gangs last reported to '+restrictToSup+' — they may still pick up any gang via Daily Paste or Log Entry':'No gangs yet — add one in the Team tab';
+    sel.appendChild(o);
+    return;
+  }
+  const bySup={};
+  list.forEach(g=>{const k=lastSupOf(g);(bySup[k]=bySup[k]||[]).push(g);});
+  Object.entries(bySup).forEach(([sup,gs])=>{
+    const grp=document.createElement('optgroup');
+    grp.label=sup==='No history yet'?'No history yet':'Last reported to: '+sup;
+    gs.forEach(g=>{
+      const o=document.createElement('option');
+      o.value=g.id;
+      o.textContent=gangStaffNames(g);
+      grp.appendChild(o);
+    });
+    sel.appendChild(grp);
+  });
+  if(list.find(g=>g.id===current)) sel.value=current;
+}
+
+// Looks at the gang's most recent log entry (by date+time) to find which
+// supervisor they last reported to. Returns '' if the gang has no history
+// or has never had a supervisor. This is "memory", not a fixed assignment —
+// any supervisor can still be picked for the current log.
+function lastSupervisorForGang(gangId,gangName){
+  const gangLogs=logs.filter(l=>l.gangId===gangId||(gangName&&l.gang===gangName));
+  if(!gangLogs.length) return '';
+  const sorted=gangLogs.slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  return sorted[0].supervisor||'';
+}
+
+function onGangChange(){
+  clearErr(document.getElementById('gangSelect'));
+  const gangId=document.getElementById('gangSelect').value;
+  const memLine=document.getElementById('supMemoryLine');
+  const g=gangs.find(x=>x.id===gangId);
+  if(!g){memLine.style.display='none';return;}
+  const lastSup=lastSupervisorForGang(gangId,gangStaffNames(g));
+  memLine.style.display='block';
+  memLine.innerHTML=lastSup
+    ? `🦺 Reporting to <strong>${lastSup}</strong> <span style="color:var(--faint)">(remembered from last time — change in "More options" if different today)</span>`
+    : `<span style="color:var(--amber)">No supervisor history for this gang yet — set one in "More options" if needed</span>`;
+  // suggest the last-used supervisor as a convenience, but never force it —
+  // only pre-fill if the field is currently empty
+  if(lastSup && !document.getElementById('supOverride').value){
+    document.getElementById('supOverride').value=lastSup;
+    document.getElementById('supOverrideVisible').value=lastSup;
+  }
+  checkDups();
+}
+
+// ── DUPLICATE CHECK ───────────────────────────────────────────────────────────
+function locAlreadyLoggedToday(locName,gangId,date){
+  const g=gangs.find(x=>x.id===gangId);
+  const gangName=g?gangStaffNames(g):'';
+  return logs.filter(l=>(l.gangId===gangId||(gangName&&l.gang===gangName))&&l.date===date)
+    .some(l=>l.locations.some(x=>x.l===locName));
+}
+function checkDups(){
+  const gangId=document.getElementById('gangSelect').value;
+  const date=document.getElementById('logDate').value;
+  if(!gangId||!date){document.getElementById('dupWarn').style.display='none';return;}
+  const has=selectedLocs.some(s=>locAlreadyLoggedToday(s.l,gangId,date));
+  document.getElementById('dupWarn').style.display=has?'block':'none';
+}
+
+// ── LOCATION AUTOCOMPLETE (free text allowed) ─────────────────────────────────
+function searchLocs(){
+  const q=document.getElementById('locInput').value.trim().toUpperCase();
+  const feeder=document.getElementById('feederFilter').value;
+  const gangId=document.getElementById('gangSelect').value;
+  const date=document.getElementById('logDate').value;
+  const list=document.getElementById('acList');
+  if(q.length<2){list.classList.remove('open');return;}
+  acFiltered=TX.filter(t=>(!feeder||t.f===feeder)&&t.l.toUpperCase().includes(q)).slice(0,20);
+  acIndex=-1;
+  const customOption=`<div class="ac-item" style="background:#FAFBFC" onclick="addCustomLoc()">
+    <span>➕ Add "<strong>${escapeHtml(document.getElementById('locInput').value.trim())}</strong>" as custom location</span>
+  </div>`;
+  const doneOption=selectedLocs.length?`<div class="ac-item" style="background:var(--green-light);font-weight:600;justify-content:center" onclick="finishLocPicking()">
+    ✓ Done picking — ${selectedLocs.length} location${selectedLocs.length>1?'s':''} added
+  </div>`:'';
+  list.innerHTML=doneOption+(acFiltered.length?acFiltered.map((t)=>{
+    const alreadyInThisLog=selectedLocs.find(s=>s.l===t.l&&s.f===t.f);
+    const alreadyLoggedToday=gangId&&date&&locAlreadyLoggedToday(t.l,gangId,date)&&!alreadyInThisLog;
+    const safeL=t.l.replace(/'/g,"\\'"), safeF=t.f.replace(/'/g,"\\'");
+    if(alreadyInThisLog){
+      return`<div class="ac-item already" style="background:var(--green-light)">
+        <span>✓ ${fdot(t.f)}${t.l} <span style="font-size:10px;color:var(--green-dark)">added to this log</span></span>
+        <span style="font-size:11px;color:var(--muted)">${t.f}</span>
+      </div>`;
+    }
+    return`<div class="ac-item${alreadyLoggedToday?' already':''}" data-l="${escapeHtml(t.l)}" data-f="${escapeHtml(t.f)}" onclick="${alreadyLoggedToday?'':`selectLocByName('${safeL}','${safeF}')`}">
+      <span>${fdot(t.f)}${t.l}${alreadyLoggedToday?' <span style="font-size:10px;color:var(--amber)">⚠ already logged today</span>':''}</span>
+      <span style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:10px;color:var(--muted);white-space:nowrap">${t.f}</span>
+    </div>`;
+  }).join(''):'')+customOption;
+  list.classList.add('open');
+}
+function finishLocPicking(){
+  document.getElementById('locInput').value='';
+  closeAC();
+  document.getElementById('locInput').focus();
+}
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function addCustomLoc(){
+  const val=document.getElementById('locInput').value.trim();
+  if(!val)return;
+  selectedLocs.push({l:val,f:'Custom'});
+  renderChips();
+  document.getElementById('locInput').value='';
+  closeAC();
+  checkDups();
+}
+function handleLocKey(e){
+  const items=[...document.getElementById('acList').querySelectorAll('.ac-item:not(.already)')].filter(el=>el.dataset.l);
+  if(e.key==='ArrowDown'){e.preventDefault();acIndex=Math.min(acIndex+1,items.length-1);hlAC(items);}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIndex=Math.max(acIndex-1,0);hlAC(items);}
+  else if(e.key==='Enter'){
+    e.preventDefault();
+    if(acIndex>=0&&items[acIndex]) selectLocByName(items[acIndex].dataset.l,items[acIndex].dataset.f);
+    else addCustomLoc();
+  }
+  else if(e.key==='Escape')closeAC();
+}
+function hlAC(items){items.forEach((it,i)=>it.classList.toggle('hi',i===acIndex));}
+function selectLocByName(l,f){
+  if(selectedLocs.find(s=>s.l===l&&s.f===f))return; // already added, ignore
+  selectedLocs.push({l,f});
+  renderChips();
+  checkDups();
+  // Don't clear the search or close the dropdown — if the typed name has
+  // siblings (e.g. "Aige" matching both POLE 1 and POLE 2), keep showing them
+  // so the next one is a single tap, not a re-type. Re-run the search so the
+  // just-picked entry now shows as already-selected.
+  searchLocs();
+}
+function closeAC(){document.getElementById('acList').classList.remove('open');}
+function resetLocSearch(){document.getElementById('locInput').value='';closeAC();}
+
+function renderChips(){
+  const gangId=document.getElementById('gangSelect').value;
+  const date=document.getElementById('logDate').value;
+  document.getElementById('locChips').innerHTML=selectedLocs.map((s,i)=>{
+    const dup=gangId&&date&&locAlreadyLoggedToday(s.l,gangId,date);
+    return`<div class="chip${dup?' chip-warn':''}" title="Feeder: ${s.f}">
+      ${fdot(s.f)}${s.l}
+      <span class="chip-x" onclick="removeLoc(${i})">×</span>
+    </div>`;
+  }).join('');
+  const summaryEl=document.getElementById('feedersUsedSummary');
+  if(summaryEl){
+    const feeders=[...new Set(selectedLocs.map(s=>s.f))];
+    summaryEl.innerHTML=feeders.length>1
+      ? `📍 This log spans <strong>${feeders.length} feeders</strong>: ${feeders.map(f=>fdot(f)+f).join(' &nbsp; ')}`
+      : (feeders.length===1 ? `📍 Feeder: ${fdot(feeders[0])}${feeders[0]}` : '');
+  }
+}
+function removeLoc(i){selectedLocs.splice(i,1);renderChips();checkDups();}
+
+// ── VALIDATION ────────────────────────────────────────────────────────────────
+function markErr(id){document.getElementById(id).classList.add('err');}
+function clearErr(el){if(el)el.classList.remove('err');}
+function clearAllErr(){document.querySelectorAll('.err').forEach(e=>e.classList.remove('err'));}
+
+// ── SAVE LOG (supervisor optional) ────────────────────────────────────────────
+async function saveLog(){
+  clearAllErr();
+  let ok=true;
+  const gangId=document.getElementById('gangSelect').value;
+  const date=document.getElementById('logDate').value;
+  if(!gangId){markErr('gangSelect');ok=false;}
+  if(!date){markErr('logDate');ok=false;}
+  if(selectedLocs.length===0){markErr('locInput');ok=false;}
+  if(!ok){toast('Please fill in all required fields','err');return;}
+
+  const g=gangs.find(x=>x.id===gangId);
+  const gangStaffList=g?g.staffIds.map(staffName):[];
+  const sup=document.getElementById('supOverride').value; // optional, can be blank
+
+  // Approval rule: only entries submitted while logged in AS a supervisor
+  // need approval. UM, Mr Rafael, and generic Field Worker sessions are
+  // treated as already-approved (admin-entered) records.
+  const submittedBySupervisor=currentRole&&currentRole.startsWith('sup_');
+  const approvalStatus=submittedBySupervisor?'Pending':'Approved';
+
+  const id=Date.now()+'';
+  const entry={
+    id,date,
+    time:document.getElementById('logTime').value,
+    supervisor:sup,
+    gang:g?gangStaffNames(g):'',
+    gangId,
+    linesman:gangStaffList[0]||'',
+    linesmate:gangStaffList[1]||'',
+    locations:[...selectedLocs],
+    activity:getSelectedActivities(), // comma-joined multi-select
+    status:'In Progress',             // always starts In Progress — auto-completes after 48hrs
+    notes:document.getElementById('logNotes').value.trim(),
+    approvalStatus,
+    approvedBy:''
+  };
+
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='Saving…';
+  syncStart('Saving to Google Sheets…');
+  try{
+    const result=await apiPost({
+      action:'save',...entry,
+      locations:entry.locations.map(x=>x.l).join(' | '),
+      feeders:entry.locations.map(x=>x.f).join(' | ')
+    });
+    if(result.success){
+      logs.unshift(entry);
+      selectedLocs=[];
+      renderChips();
+      document.getElementById('logNotes').value='';
+      document.getElementById('locInput').value='';
+      document.getElementById('dupWarn').style.display='none';
+      updateStats();renderTodayList();
+      toast(submittedBySupervisor?'Log submitted — pending approval from Mr Rafael or the Undertaking Manager ✓':'Logged ✓ — gang stays selected, add the next location');
+      // tight loop: gang/date/supervisor/activity all stay as-is so the next
+      // location for the same gang takes one tap, not a full re-fill
+      document.getElementById('locInput').focus();
+    }else toast('Save failed: '+(result.error||'Unknown error'),'err');
+  }catch(e){toast('Network error — could not save','err');}
+  btn.disabled=false;btn.textContent='➕ Log This & Keep Going';
+  syncEnd();
+}
+
+// ── STAFF MANAGEMENT ───────────────────────────────────────────────────────────
+async function addStaff(){
+  const name=document.getElementById('newStaffName').value.trim();
+  const role=document.getElementById('newStaffRole').value;
+  if(!name){toast('Enter a staff name','err');return;}
+  if(staff.find(s=>s.name.toLowerCase()===name.toLowerCase())){toast('Staff member already exists','warn');return;}
+  const id='s'+Date.now();
+  syncStart('Adding staff member…');
+  try{
+    const r=await apiPost({action:'saveStaff',id,name,role});
+    if(r.success){
+      staff.push({id,name,role});
+      document.getElementById('newStaffName').value='';
+      renderStaffList();
+      toast(`${name} added to staff ✓`);
+    }else toast(r.error||'Could not add staff','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+async function deleteStaff(id){
+  const usedIn=gangs.filter(g=>g.staffIds.includes(id));
+  if(usedIn.length){
+    toast(`Cannot remove — used in ${usedIn.length} gang(s). Remove from gangs first.`,'err');
+    return;
+  }
+  if(!confirm('Remove this staff member?'))return;
+  syncStart('Removing staff member…');
+  try{
+    const r=await apiPost({action:'deleteStaff',id});
+    if(r.success){
+      staff=staff.filter(s=>s.id!==id);
+      renderStaffList();
+      toast('Staff member removed');
+    }else toast(r.error||'Could not remove staff','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+function renderStaffList(){
+  const el=document.getElementById('staffList');
+  const badge=document.getElementById('staffCountBadge');
+  if(badge)badge.textContent=staff.length+' staff';
+  if(!el)return;
+  el.innerHTML=staff.map(s=>`
+    <span class="staff-pill">
+      <span class="ga ${s.role==='Linesman'?'ga-blue':'ga-green'}">${s.name[0].toUpperCase()}</span>
+      ${s.name} <span style="color:var(--muted);font-size:10px">(${s.role})</span>
+      <span class="rm" onclick="deleteStaff('${s.id}')">×</span>
+    </span>`).join('')||'<span style="color:var(--muted);font-size:12px">No staff yet</span>';
+}
+
+// ── GANG BUILDER — STAFF PICKER ────────────────────────────────────────────────
+function searchStaffForGang(){
+  const q=document.getElementById('ngStaffInput').value.trim().toLowerCase();
+  const list=document.getElementById('ngStaffAcList');
+  if(q.length<1){list.classList.remove('open');return;}
+  ngStaffAcFiltered=staff.filter(s=>
+    s.name.toLowerCase().includes(q)&&!ngSelectedStaff.includes(s.id)
+  ).slice(0,15);
+  ngStaffAcIndex=-1;
+  list.innerHTML=ngStaffAcFiltered.length?ngStaffAcFiltered.map((s,i)=>
+    `<div class="ac-item" onclick="selectNgStaff(${i})">
+      <span><span class="ga ${s.role==='Linesman'?'ga-blue':'ga-green'}" style="width:20px;height:20px;font-size:9px;display:inline-flex;margin-right:6px">${s.name[0].toUpperCase()}</span>${s.name}</span>
+      <span style="font-size:11px;color:var(--muted)">${s.role}</span>
+    </div>`).join(''):'<div class="ac-item" style="color:var(--muted);cursor:default">No matching staff — add them above first</div>';
+  list.classList.add('open');
+}
+function handleStaffKey(e){
+  const items=[...document.getElementById('ngStaffAcList').querySelectorAll('.ac-item')];
+  if(e.key==='ArrowDown'){e.preventDefault();ngStaffAcIndex=Math.min(ngStaffAcIndex+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('hi',i===ngStaffAcIndex));}
+  else if(e.key==='ArrowUp'){e.preventDefault();ngStaffAcIndex=Math.max(ngStaffAcIndex-1,0);items.forEach((it,i)=>it.classList.toggle('hi',i===ngStaffAcIndex));}
+  else if(e.key==='Enter'){e.preventDefault();if(ngStaffAcIndex>=0)selectNgStaff(ngStaffAcIndex);}
+  else if(e.key==='Escape')closeNgStaffAC();
+}
+function selectNgStaff(i){
+  const s=ngStaffAcFiltered[i];if(!s)return;
+  ngSelectedStaff.push(s.id);
+  renderNgStaffChips();
+  document.getElementById('ngStaffInput').value='';
+  closeNgStaffAC();
+}
+function closeNgStaffAC(){const l=document.getElementById('ngStaffAcList');if(l)l.classList.remove('open');}
+function renderNgStaffChips(){
+  document.getElementById('ngStaffChips').innerHTML=ngSelectedStaff.map((id,i)=>{
+    const s=staff.find(x=>x.id===id);
+    return`<div class="chip">${s?s.name:'?'}<span class="chip-x" onclick="removeNgStaff(${i})">×</span></div>`;
+  }).join('');
+}
+function removeNgStaff(i){ngSelectedStaff.splice(i,1);renderNgStaffChips();}
+
+// ── EDIT GANG MEMBERS ──────────────────────────────────────────────────────────
+let egEditingStaffIds=[];
+let egStaffAcFiltered=[];
+let egStaffAcIndex=-1;
+
+function openEditGangMembers(gangId){
+  const g=gangs.find(x=>x.id===gangId);
+  if(!g){toast('Gang not found','err');return;}
+  document.getElementById('egGangId').value=gangId;
+  document.getElementById('egGangName').value=g.name;
+  egEditingStaffIds=[...g.staffIds];
+  document.getElementById('egStaffInput').value='';
+  renderEgStaffChips();
+  document.getElementById('editGangModal').style.display='flex';
+}
+function closeEditGangModal(e){
+  if(e&&e.target!==document.getElementById('editGangModal'))return;
+  document.getElementById('editGangModal').style.display='none';
+}
+function renderEgStaffChips(){
+  document.getElementById('egStaffChips').innerHTML=egEditingStaffIds.map((id,i)=>{
+    const s=staff.find(x=>x.id===id);
+    return`<div class="chip">${s?s.name:'?'}<span class="chip-x" onclick="removeEgStaff(${i})">×</span></div>`;
+  }).join('')||'<span style="color:var(--muted);font-size:12px">No members yet — add at least two below</span>';
+}
+function removeEgStaff(i){egEditingStaffIds.splice(i,1);renderEgStaffChips();}
+function searchStaffForEditGang(){
+  const q=(document.getElementById('egStaffInput').value||'').trim().toLowerCase();
+  const list=document.getElementById('egStaffAcList');
+  if(q.length<1){list.classList.remove('open');return;}
+  egStaffAcFiltered=staff.filter(s=>s.name.toLowerCase().includes(q)&&!egEditingStaffIds.includes(s.id)).slice(0,15);
+  egStaffAcIndex=-1;
+  list.innerHTML=egStaffAcFiltered.length?egStaffAcFiltered.map((s,i)=>
+    `<div class="ac-item" onclick="selectEgStaff(${i})">
+      <span><span class="ga ${s.role==='Linesman'?'ga-blue':'ga-green'}" style="width:20px;height:20px;font-size:9px;display:inline-flex;margin-right:6px">${s.name[0].toUpperCase()}</span>${s.name}</span>
+      <span style="font-size:11px;color:var(--muted)">${s.role}</span>
+    </div>`).join(''):'<div class="ac-item" style="color:var(--muted);cursor:default">No matching staff — add them in the Technical Staff list first</div>';
+  list.classList.add('open');
+}
+function handleEgStaffKey(e){
+  const items=[...document.getElementById('egStaffAcList').querySelectorAll('.ac-item')];
+  if(e.key==='ArrowDown'){e.preventDefault();egStaffAcIndex=Math.min(egStaffAcIndex+1,items.length-1);items.forEach((it,i)=>it.classList.toggle('hi',i===egStaffAcIndex));}
+  else if(e.key==='ArrowUp'){e.preventDefault();egStaffAcIndex=Math.max(egStaffAcIndex-1,0);items.forEach((it,i)=>it.classList.toggle('hi',i===egStaffAcIndex));}
+  else if(e.key==='Enter'){e.preventDefault();if(egStaffAcIndex>=0)selectEgStaff(egStaffAcIndex);}
+  else if(e.key==='Escape')document.getElementById('egStaffAcList').classList.remove('open');
+}
+function selectEgStaff(i){
+  const s=egStaffAcFiltered[i];if(!s)return;
+  egEditingStaffIds.push(s.id);
+  renderEgStaffChips();
+  document.getElementById('egStaffInput').value='';
+  document.getElementById('egStaffAcList').classList.remove('open');
+}
+async function saveEditGangMembers(){
+  const gangId=document.getElementById('egGangId').value;
+  const newName=document.getElementById('egGangName').value.trim();
+  if(egEditingStaffIds.length<2){toast('A gang needs at least two members','err');return;}
+  if(!newName){toast('Gang name cannot be empty','err');return;}
+  const g=gangs.find(x=>x.id===gangId);
+  if(!g)return;
+  const dupe=gangs.find(x=>x.id!==gangId&&x.name.toLowerCase()===newName.toLowerCase());
+  if(dupe){toast('Another gang already has that name','err');return;}
+
+  syncStart('Saving gang changes…');
+  try{
+    const r=await apiPost({action:'updateGang',id:gangId,name:newName,staffIds:egEditingStaffIds.join('|')});
+    if(r.success){
+      g.name=newName;
+      g.staffIds=[...egEditingStaffIds];
+      document.getElementById('editGangModal').style.display='none';
+      populateGangDropdown();renderGangGrid();renderOrgTree();
+      toast('Gang members updated ✓');
+    }else toast(r.error||'Could not save changes','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+async function addGang(){
+  if(ngSelectedStaff.length<2){toast('Pick at least two staff members for the gang','err');return;}
+  const sup=document.getElementById('ngSup').value;
+  let name=document.getElementById('ngName').value.trim();
+  if(!name) name=ngSelectedStaff.map(staffName).join(' & ');
+  if(gangs.find(g=>g.name.toLowerCase()===name.toLowerCase())){toast('A gang with that name already exists','warn');return;}
+  const id='g'+Date.now();
+  const staffIds=[...ngSelectedStaff];
+  syncStart('Creating gang…');
+  try{
+    const r=await apiPost({action:'saveGang',id,name,supervisor:sup,staffIds:staffIds.join('|'),homeLocations:''});
+    if(r.success){
+      gangs.push({id,name,supervisor:sup,staffIds,homeLocations:[]});
+      document.getElementById('ngName').value='';
+      document.getElementById('ngSup').value='';
+      ngSelectedStaff=[];
+      renderNgStaffChips();
+      populateGangDropdown();
+      renderGangGrid();
+      renderOrgTree();
+      updateStats();
+      toast(`Gang "${name}" created ✓`);
+    }else toast(r.error||'Could not create gang','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+async function deleteGang(id){
+  if(!confirm('Remove this gang from the system?'))return;
+  syncStart('Removing gang…');
+  try{
+    const r=await apiPost({action:'deleteGang',id});
+    if(r.success){
+      gangs=gangs.filter(g=>g.id!==id);
+      populateGangDropdown();renderGangGrid();renderOrgTree();updateStats();
+      toast('Gang removed');
+    }else toast(r.error||'Could not remove gang','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+function renderGangGrid(){
+  const filterSup=document.getElementById('gangFilterSup').value;
+  const el=document.getElementById('gangGrid');
+  if(!el)return;
+  const badge=document.getElementById('gangCountBadge');
+  if(badge)badge.textContent=gangs.length+' gangs';
+  const lastSupOf=g=>lastSupervisorForGang(g.id,gangStaffNames(g));
+  let filtered=gangs;
+  if(filterSup==='__unassigned__') filtered=gangs.filter(g=>!lastSupOf(g));
+  else if(filterSup) filtered=gangs.filter(g=>lastSupOf(g)===filterSup);
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="ei">👷</div><div class="et">No gangs${filterSup?' for this filter':' yet'}</div><div class="es">Build one above, or use Bulk Import</div></div>`;
+    return;
+  }
+  el.innerHTML=filtered.map(g=>{
+    const gLogs=logs.filter(l=>l.gang===gangStaffNames(g));
+    const lastLog=gLogs[0];
+    const lastSup=lastSupOf(g);
+    return`<div class="gang-card">
+      <button class="gang-del" onclick="deleteGang('${g.id}')" title="Remove gang">✕</button>
+      <div class="gang-card-header">
+        <div class="ga ${lastSup?'ga-green':'ga-gray'}">${g.name[0].toUpperCase()}</div>
+        <div>
+          <div class="gn">${g.name}</div>
+          <div class="gr-sub">${lastSup?'Last reported to: '+lastSup:'No supervisor history yet'} <span style="color:var(--faint)">· not fixed</span></div>
+        </div>
+      </div>
+      <div style="font-size:12px;margin-top:4px">
+        ${g.staffIds.map(id=>{const s=staff.find(x=>x.id===id);return s?`<div style="margin-bottom:3px">🔧 <strong>${s.name}</strong> <span style="color:var(--muted)">(${s.role})</span></div>`:'';}).join('')}
+      </div>
+      ${g.homeLocations&&g.homeLocations.length?`<div style="font-size:11px;color:var(--muted);margin-top:6px">📍 Usual area: ${g.homeLocations.slice(0,3).join(', ')}${g.homeLocations.length>3?' +'+(g.homeLocations.length-3)+' more':''}</div>`:''}
+      <div class="gang-stats">
+        <div class="gang-stat"><strong>${gLogs.length}</strong>logs</div>
+        <div class="gang-stat"><strong>${gLogs.reduce((a,l)=>a+l.locations.length,0)}</strong>locations</div>
+        <div class="gang-stat"><strong style="font-size:12px">${lastLog?lastLog.date.slice(5):'—'}</strong>last active</div>
+      </div>
+      <button class="btn bs bsm bfull" style="margin-top:10px" onclick="openEditGangMembers('${g.id}')">✏ Edit Members</button>
+    </div>`;
+  }).join('');
+}
+
+function renderOrgTree(){
+  const sups=['Prince','Esther Obi','Esther Okon','Mabel','Amaka'];
+  const el=document.getElementById('orgTree');if(!el)return;
+  const unassigned=gangs.filter(g=>!g.supervisor);
+  el.innerHTML=`
+  <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Ikeja Electric — Agege Undertaking Network Operations</div>
+  <div class="org-node" style="margin-top:0">
+    <div class="ga ga-purple">UM</div>
+    <div><div class="org-label um">🏢 Undertaking Manager</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px">Line manager — full oversight of undertaking</div></div>
+  </div>
+  <div class="org-line">
+    <div class="org-node">
+      <div class="ga ga-blue" style="width:34px;height:34px;font-size:12px">RF</div>
+      <div><div class="org-label mgr">👔 Manager — Operations Manager</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Reports to Undertaking Manager</div></div>
+    </div>
+    <div class="org-line">
+      ${sups.map(sup=>{
+        const gs=gangs.filter(g=>g.supervisor===sup);
+        return`<div class="org-node">
+          <div class="ga ga-amber" style="width:32px;height:32px;font-size:12px;flex-shrink:0">${sup[0]}</div>
+          <div style="flex:1">
+            <div class="org-label sup">🦺 Supervisor: ${sup}
+              <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px">${gs.length} gang${gs.length!==1?'s':''}</span>
+            </div>
+            ${gs.length?`<div class="org-line" style="margin-top:6px">
+              ${gs.map(g=>`<div class="org-node" style="margin-top:8px">
+                <div class="ga ga-green" style="width:26px;height:26px;font-size:10px;flex-shrink:0">${g.name[0].toUpperCase()}</div>
+                <div><div class="org-label field">🔧 ${g.name}</div></div>
+              </div>`).join('')}
+            </div>`:'<div style="font-size:11px;color:var(--faint);margin-top:4px;margin-left:4px">No gangs assigned yet</div>'}
+          </div>
+        </div>`;
+      }).join('')}
+      ${unassigned.length?`<div class="org-node">
+        <div class="ga ga-gray" style="width:32px;height:32px;font-size:12px;flex-shrink:0">—</div>
+        <div style="flex:1">
+          <div class="org-label unassigned">⚠ Unassigned <span style="font-size:11px;font-weight:400;margin-left:8px">${unassigned.length} gang${unassigned.length!==1?'s':''}</span></div>
+          <div class="org-line" style="margin-top:6px">
+            ${unassigned.map(g=>`<div class="org-node" style="margin-top:8px">
+              <div class="ga ga-green" style="width:26px;height:26px;font-size:10px;flex-shrink:0">${g.name[0].toUpperCase()}</div>
+              <div><div class="org-label field">🔧 ${g.name}</div></div>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+// ── BULK IMPORT ────────────────────────────────────────────────────────────────
+function openImportModal(){document.getElementById('importModal').style.display='flex';}
+function closeImportModal(e){if(!e||e.target===document.getElementById('importModal'))document.getElementById('importModal').style.display='none';}
+function closeImportPreview(e){if(!e||e.target===document.getElementById('importPreviewModal'))document.getElementById('importPreviewModal').style.display='none';}
+
+function parseImport(){
+  const raw=document.getElementById('importRaw').value.trim();
+  if(!raw){toast('Paste some data first','err');return;}
+
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  // detect header row
+  let rows=lines.map(l=>l.includes('\t')?l.split('\t'):l.split(/\s{2,}|,(?=\s*[A-Z])/));
+  // try splitting on tabs first; fallback: assume 3 commas-separated logical fields won't always work,
+  // so prefer tab-separated (typical paste from Word/Excel table)
+  rows=lines.map(l=>l.split('\t'));
+  // if no tabs detected at all, try a looser split: Supervisor | Gang | Locations using multiple spaces
+  if(rows.every(r=>r.length===1)){
+    rows=lines.map(l=>l.split(/\s{2,}/));
+  }
+  // drop header row if it looks like one
+  if(rows.length && /supervisor/i.test(rows[0][0]||'') ){
+    rows=rows.slice(1);
+  }
+
+  const parsedGangs=[];
+  const newStaffNames=new Set();
+  rows.forEach(cols=>{
+    if(cols.length<2) return; // not enough info
+    const sup=(cols[0]||'').trim();
+    const gangField=(cols[1]||'').trim();
+    const locField=(cols[2]||'').trim();
+    if(!gangField) return;
+    // split staff names on & or , or "and"
+    const names=gangField.split(/&|,| and /i).map(s=>s.trim()).filter(Boolean);
+    if(names.length<2) return; // need at least 2 staff to form a gang
+    names.forEach(n=>newStaffNames.add(n));
+    const locs=locField?locField.split(/,| and /i).map(s=>s.trim()).filter(Boolean):[];
+    parsedGangs.push({supervisor:sup,staffNames:names,locations:locs,gangLabel:names.join(' & ')});
+  });
+
+  if(!parsedGangs.length){
+    toast('Could not detect any gang rows — check the format and try again','err');
+    return;
+  }
+
+  pendingImport={gangs:parsedGangs,staffNames:[...newStaffNames]};
+  renderImportPreview();
+  closeImportModal();
+  document.getElementById('importPreviewModal').style.display='flex';
+}
+
+function renderImportPreview(){
+  const el=document.getElementById('importPreviewContent');
+  const existingStaffNames=staff.map(s=>s.name.toLowerCase());
+  const newStaff=pendingImport.staffNames.filter(n=>!existingStaffNames.includes(n.toLowerCase()));
+  const existingGangNames=gangs.map(g=>g.name.toLowerCase());
+
+  let html=`<h4 style="font-size:13px;margin-bottom:8px">New Staff to Add (${newStaff.length})</h4>`;
+  html+=newStaff.length?`<div style="margin-bottom:16px">${newStaff.map(n=>`<span class="chip" style="background:var(--green-light)">${n}</span>`).join(' ')}</div>`
+    :'<p style="font-size:12px;color:var(--muted);margin-bottom:16px">No new staff — all names already exist.</p>';
+
+  html+=`<h4 style="font-size:13px;margin-bottom:8px">Gangs (${pendingImport.gangs.length})</h4>`;
+  html+=`<table class="import-preview-table"><thead><tr><th>Supervisor</th><th>Gang</th><th>Staff</th><th>Locations (logged for today)</th><th>Status</th></tr></thead><tbody>`;
+  pendingImport.gangs.forEach(g=>{
+    const exists=existingGangNames.includes(g.gangLabel.toLowerCase());
+    html+=`<tr class="${exists?'import-row-exists':'import-row-new'}">
+      <td>${g.supervisor||'<em style="color:var(--muted)">Unassigned</em>'}</td>
+      <td><strong>${g.gangLabel}</strong></td>
+      <td>${g.staffNames.join(', ')}</td>
+      <td>${g.locations.join(', ')||'<em style="color:var(--muted)">none</em>'}</td>
+      <td>${exists?'⚠ Already exists — will skip':'✓ New'}</td>
+    </tr>`;
+  });
+  html+='</tbody></table>';
+  el.innerHTML=html;
+}
+
+async function confirmImport(){
+  if(!pendingImport)return;
+  const btn=document.getElementById('confirmImportBtn');
+  btn.disabled=true;btn.textContent='Importing…';
+
+  // 1. add new staff — push to Sheet as each one is created
+  for(const name of pendingImport.staffNames){
+    if(!staff.find(s=>s.name.toLowerCase()===name.toLowerCase())){
+      const id='s'+Date.now()+Math.random().toString(36).slice(2,6);
+      const role='Linesman';
+      try{
+        const r=await apiPost({action:'saveStaff',id,name,role});
+        if(r.success) staff.push({id,name,role});
+      }catch(e){/* continue; the gang creation below will simply skip this name */}
+    }
+  }
+
+  // 2. add new gangs (skip existing) + collect today's log entries for locations
+  const today=new Date().toISOString().slice(0,10);
+  const time=new Date().toTimeString().slice(0,5);
+  const logsToSave=[];
+  let addedGangs=0, skippedGangs=0;
+
+  for(const g of pendingImport.gangs){
+    const existing=gangs.find(x=>x.name.toLowerCase()===g.gangLabel.toLowerCase());
+    let gangObj=existing;
+    if(!existing){
+      const staffIds=g.staffNames.map(n=>{
+        const found=staff.find(s=>s.name.toLowerCase()===n.toLowerCase());
+        return found?found.id:null;
+      }).filter(Boolean);
+      if(staffIds.length<2){skippedGangs++;continue;} // couldn't resolve both staff members, skip safely
+      const id='g'+Date.now()+Math.random().toString(36).slice(2,6);
+      gangObj={id,name:g.gangLabel,supervisor:g.supervisor,staffIds,homeLocations:g.locations};
+      try{
+        const r=await apiPost({action:'saveGang',id,name:g.gangLabel,supervisor:g.supervisor,staffIds:staffIds.join('|'),homeLocations:g.locations.join('|')});
+        if(r.success){gangs.push(gangObj);addedGangs++;}
+        else{skippedGangs++;continue;}
+      }catch(e){skippedGangs++;continue;}
+    } else {
+      skippedGangs++;
+    }
+    // queue a log entry for today's locations if any were given
+    if(g.locations.length){
+      const staffNamesForLog=gangObj.staffIds.map(staffName);
+      logsToSave.push({
+        id:Date.now()+''+Math.random().toString(36).slice(2,5),
+        date:today,time,
+        supervisor:g.supervisor,
+        gang:gangObj.name,gangId:gangObj.id,
+        linesman:staffNamesForLog[0]||'',linesmate:staffNamesForLog[1]||'',
+        locations:g.locations.map(l=>({l,f:'Custom'})),
+        activity:'Cash Drive',status:'In Progress',
+        notes:'Imported from bulk paste'
+      });
+    }
+  }
+
+  // 3. push logs to Google Sheet
+  syncStart(`Saving ${logsToSave.length} imported log(s) to Google Sheets…`);
+  let saveErrors=0;
+  for(const entry of logsToSave){
+    try{
+      const result=await apiPost({
+        action:'save',...entry,
+        locations:entry.locations.map(x=>x.l).join(' | '),
+        feeders:entry.locations.map(x=>x.f).join(' | ')
+      });
+      if(result.success) logs.unshift(entry);
+      else saveErrors++;
+    }catch(e){saveErrors++;}
+  }
+  syncEnd();
+
+  populateGangDropdown();renderGangGrid();renderOrgTree();renderStaffList();updateStats();renderTodayList();
+  document.getElementById('importPreviewModal').style.display='none';
+  document.getElementById('importRaw').value='';
+  btn.disabled=false;btn.textContent='✓ Confirm & Add';
+  pendingImport=null;
+
+  toast(`Import complete: ${addedGangs} gang(s) added, ${skippedGangs} already existed${saveErrors?', '+saveErrors+' log save error(s)':''} ✓`);
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function updateStats(){
+  const today=new Date().toISOString().slice(0,10);
+  const weekAgo=new Date(Date.now()-7*86400000).toISOString().slice(0,10);
+  const tl=logs.filter(l=>l.date===today);
+  const wl=logs.filter(l=>l.date>=weekAgo);
+  document.getElementById('statToday').textContent=tl.length;
+  document.getElementById('statTotal').textContent=logs.length;
+  document.getElementById('statLoc').textContent=new Set(wl.flatMap(l=>l.locations.map(x=>x.l))).size;
+  document.getElementById('statGangs').textContent=gangs.length;
+  const b=document.getElementById('todayBadge');
+  if(b)b.textContent=tl.length+' entries';
+}
+
+// ── TODAY LIST ─────────────────────────────────────────────────────────────────
+function renderTodayList(){
+  const today=new Date().toISOString().slice(0,10);
+  const tl=logs.filter(l=>l.date===today);
+  const el=document.getElementById('todayList');
+  if(!tl.length){
+    el.innerHTML='<div class="empty-state"><div class="ei">📋</div><div class="et">No logs yet today</div><div class="es">Add a location above to record your first visit</div></div>';
+    return;
+  }
+  el.innerHTML=tl.map(l=>`
+    <div class="log-item" style="cursor:pointer" onclick="openEdit('${l.id}')" title="Tap to fix a mistake">
+      <div class="log-meta">
+        <strong>${l.gang||'—'}</strong>
+        <span style="font-size:11px;color:var(--muted)">${l.supervisor?'Sup: '+l.supervisor:'No supervisor'}</span>
+        <span class="mono" style="font-size:11px;color:var(--muted)">${l.time}</span>
+        <span class="badge ${sc(l.status)}">${l.status}</span>
+        <span class="badge bg-gr">${l.activity}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--faint)">✏ tap to fix</span>
+      </div>
+      <div class="log-locs">${l.locations.map(x=>`<span class="chip" style="font-size:11px">${fdot(x.f)}${x.l}</span>`).join('')}</div>
+      ${l.notes?`<div style="font-size:12px;color:var(--muted);margin-top:5px">${l.notes}</div>`:''}
+    </div>`).join('');
+}
+
+// ── DAILY SUMMARY ─────────────────────────────────────────────────────────────
+function renderSummary(){
+  const date=document.getElementById('summaryDate').value;
+  const el=document.getElementById('summaryContent');
+  if(!el)return;
+  const roleSup=getRoleSup();
+  let dayLogs=logs.filter(l=>l.date===date&&(!roleSup||l.supervisor===roleSup));
+  if(!dayLogs.length){
+    el.innerHTML='<div class="empty-state"><div class="ei">📅</div><div class="et">No logs for this date</div><div class="es">Select a different date or refresh</div></div>';
+    return;
+  }
+  const bySup={};
+  dayLogs.forEach(l=>{const k=l.supervisor||'Unassigned';(bySup[k]=bySup[k]||[]).push(l);});
+  const totalLocs=dayLogs.reduce((a,l)=>a+l.locations.length,0);
+  const escalated=dayLogs.filter(l=>l.status==='Escalated').length;
+  el.innerHTML=`
+    <div class="stats-row" style="margin-bottom:20px">
+      <div class="sc sg"><div class="sl">Total Logs</div><div class="sv">${dayLogs.length}</div></div>
+      <div class="sc sb"><div class="sl">Locations Covered</div><div class="sv">${totalLocs}</div></div>
+      <div class="sc"><div class="sl">Gangs Active</div><div class="sv">${new Set(dayLogs.map(l=>l.gang)).size}</div></div>
+      <div class="sc sr"><div class="sl">Escalated</div><div class="sv">${escalated}</div></div>
+    </div>
+    ${Object.entries(bySup).map(([sup,sLogs])=>`
+      <div style="margin-bottom:20px">
+        <div style="font-weight:600;font-size:13px;padding:8px 12px;background:var(--bg);border-radius:6px;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+          <span class="badge ${sup==='Unassigned'?'bg-gr':'bg-a'}">${sup}</span>
+          <span style="font-size:12px;color:var(--muted)">${sLogs.length} log${sLogs.length>1?'s':''} · ${sLogs.reduce((a,l)=>a+l.locations.length,0)} locations</span>
+        </div>
+        <div class="card"><div class="tw"><table>
+          <thead><tr><th>Time</th><th>Gang</th><th>Locations</th><th>Activity</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+          <tbody>
+            ${sLogs.map(l=>`<tr>
+              <td class="mono">${l.time}</td>
+              <td><strong>${l.gang||'—'}</strong></td>
+              <td>${l.locations.map(x=>`<span class="chip" style="font-size:11px;margin:2px">${fdot(x.f)}${x.l}</span>`).join('')}</td>
+              <td>${l.activity}</td>
+              <td>
+                <span class="badge ${sc(l.status)}">${l.status}</span>
+                ${l.approvalStatus==='Pending'?'<br><span class="badge bg-a" style="margin-top:3px">⏳ Pending</span>':''}
+              </td>
+              <td style="font-size:12px;color:var(--muted);max-width:140px">${l.notes||'—'}</td>
+              <td><button class="btn bs bsm" onclick="openEdit('${l.id}')">✏</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table></div></div>
+      </div>`).join('')}`;
+}
+
+// ── RECORDS ───────────────────────────────────────────────────────────────────
+function renderRecords(){
+  const q=(document.getElementById('srch').value||'').toLowerCase();
+  const fSup=document.getElementById('fSup').value;
+  const fFeeder=document.getElementById('fFeeder').value;
+  const fStatus=document.getElementById('fStatus').value;
+  const fDate=document.getElementById('fDate').value;
+  const roleSup=getRoleSup();
+  let filtered=logs.filter(l=>{
+    if(roleSup&&l.supervisor!==roleSup)return false;
+    if(fSup==='__unassigned__'&&l.supervisor)return false;
+    else if(fSup&&fSup!=='__unassigned__'&&l.supervisor!==fSup)return false;
+    if(fFeeder&&!l.locations.some(x=>x.f===fFeeder))return false;
+    if(fStatus&&l.status!==fStatus)return false;
+    if(fDate&&l.date!==fDate)return false;
+    if(q&&![l.gang,l.supervisor,l.activity,l.notes,...l.locations.map(x=>x.l)].join(' ').toLowerCase().includes(q))return false;
+    return true;
+  });
+  filtered.sort((a,b)=>{
+    let av=sortCol==='date'?a.date+a.time:a[sortCol]||'';
+    let bv=sortCol==='date'?b.date+b.time:b[sortCol]||'';
+    const r=av<bv?-1:av>bv?1:0;
+    return sortDir==='asc'?r:-r;
+  });
+  document.querySelectorAll('#recTable th[data-col]').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===sortCol)th.classList.add(sortDir==='asc'?'sort-asc':'sort-desc');
+  });
+  const body=document.getElementById('recBody');
+  const empty=document.getElementById('recEmpty');
+  if(!filtered.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  body.innerHTML=filtered.map(l=>`
+    <tr>
+      <td class="mono">${l.date}<br><span style="color:var(--muted)">${l.time}</span></td>
+      <td>${l.supervisor?`<span class="badge bg-a">${l.supervisor}</span>`:'<span class="badge bg-gr">Unassigned</span>'}</td>
+      <td>
+        <strong>${l.gang||'—'}</strong>
+        ${l.linesman?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${l.linesman}${l.linesmate?' & '+l.linesmate:''}</div>`:''}
+      </td>
+      <td>${l.locations.map(x=>`<span class="chip" style="font-size:11px;margin:2px">${fdot(x.f)}${x.l}</span>`).join('')}</td>
+      <td style="font-size:12px;color:var(--muted)">${[...new Set(l.locations.map(x=>x.f))].join(', ')}</td>
+      <td>${l.activity}</td>
+      <td>
+        <span class="badge ${sc(l.status)}">${l.status}</span>
+        ${l.approvalStatus==='Pending'?'<br><span class="badge bg-a" style="margin-top:3px">⏳ Pending Approval</span>':''}
+      </td>
+      <td style="max-width:150px;font-size:12px;color:var(--muted)">${l.notes||'—'}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn bs bsm" onclick="openEdit('${l.id}')" title="Edit">✏</button>
+          <button class="btn bd bsm" onclick="deleteLog('${l.id}')" title="Delete">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function sortBy(col){
+  sortCol===col?sortDir=sortDir==='asc'?'desc':'asc':(sortCol=col,sortDir='desc');
+  renderRecords();
+}
+
+async function deleteLog(id){
+  if(!confirm('Delete this log? It will be removed from Google Sheets.'))return;
+  syncStart('Deleting…');
+  try{
+    const r=await apiPost({action:'delete',id});
+    if(r.success){
+      logs=logs.filter(l=>l.id!==id);
+      updateStats();renderTodayList();renderRecords();
+      toast('Log deleted');
+    }else toast('Delete failed','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+// ── INLINE EDIT ───────────────────────────────────────────────────────────────
+function openEdit(id){
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  document.getElementById('editId').value=id;
+  document.getElementById('editStatus').value=l.status;
+  document.getElementById('editActivity').value=l.activity;
+  document.getElementById('editNotes').value=l.notes||'';
+  document.getElementById('editModal').style.display='flex';
+}
+function closeEditModal(e){
+  if(!e||e.target===document.getElementById('editModal'))
+    document.getElementById('editModal').style.display='none';
+}
+async function saveEdit(){
+  const id=document.getElementById('editId').value;
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  const status=document.getElementById('editStatus').value;
+  const activity=document.getElementById('editActivity').value;
+  const notes=document.getElementById('editNotes').value.trim();
+  syncStart('Updating Google Sheets…');
+  try{
+    const r=await apiPost({action:'update',id,status,activity,notes});
+    if(r.success){
+      l.status=status;l.activity=activity;l.notes=notes;
+      document.getElementById('editModal').style.display='none';
+      renderRecords();renderTodayList();renderSummary();
+      toast('Log updated ✓');
+    }else toast('Update failed','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────────────
+function renderAnalytics(){
+  if(document.getElementById('page-analytics').classList.contains('active')){
+    renderTodayVsNormal();
+    renderNeedsAttention();
+    renderCoverageMap();
+    renderStaleLocations();
+  }
+}
+
+// ── 1. TODAY vs NORMAL ─────────────────────────────────────────────────────────
+function renderTodayVsNormal(){
+  const el=document.getElementById('todayVsNormalContent');
+  if(!el)return;
+  const today=new Date().toISOString().slice(0,10);
+  const todayLogs=logs.filter(l=>l.date===today);
+  const todayGangs=new Set(todayLogs.map(l=>l.gang)).size;
+  const todayLocs=todayLogs.reduce((a,l)=>a+l.locations.length,0);
+
+  // compute 30-day daily average, excluding today
+  const thirtyAgo=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  const pastLogs=logs.filter(l=>l.date>=thirtyAgo&&l.date<today);
+  const byDay={};
+  pastLogs.forEach(l=>{(byDay[l.date]=byDay[l.date]||[]).push(l);});
+  const days=Object.keys(byDay).length||1;
+  const avgLogs=Math.round(pastLogs.length/days);
+  const avgGangs=Math.round(Object.values(byDay).reduce((a,d)=>a+new Set(d.map(l=>l.gang)).size,0)/days);
+  const avgLocs=Math.round(pastLogs.reduce((a,l)=>a+l.locations.length,0)/days);
+
+  const diff=todayLogs.length-avgLogs;
+  const diffStr=diff===0?'exactly average':diff>0?`${diff} above average`:`${Math.abs(diff)} below average`;
+  const color=diff>=0?'var(--green-dark)':'var(--red)';
+  const icon=diff>0?'↑':diff<0?'↓':'→';
+
+  el.innerHTML=`
+    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
+      <span style="font-size:28px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:${color}">${icon} ${todayLogs.length}</span>
+      <span style="font-size:15px;font-weight:600">logs today from ${todayGangs} gang${todayGangs!==1?'s':''}, covering ${todayLocs} location${todayLocs!==1?'s':''}</span>
+    </div>
+    <div style="font-size:13px;color:var(--muted)">
+      Your 30-day daily average is <strong>${avgLogs} logs</strong> from <strong>${avgGangs} gangs</strong> covering <strong>${avgLocs} locations</strong> — today is <strong style="color:${color}">${diffStr}</strong>.
+      ${todayLogs.length===0?'<div style="margin-top:8px;color:var(--amber);font-weight:500">⚠ No entries logged yet today.</div>':''}
+    </div>`;
+}
+
+// ── 2. NEEDS ATTENTION ─────────────────────────────────────────────────────────
+function renderNeedsAttention(){
+  const el=document.getElementById('needsAttentionContent');
+  const badge=document.getElementById('attnBadge');
+  if(!el)return;
+  const now=Date.now();
+  const pending=logs.filter(l=>l.approvalStatus==='Pending');
+  const stuckInProgress=logs.filter(l=>{
+    if(l.status!=='In Progress') return false;
+    const savedAt=parseInt(l.id);
+    if(isNaN(savedAt)) return false;
+    return (now-savedAt)>24*60*60*1000; // in progress for >24hrs
+  });
+  const total=pending.length+stuckInProgress.length;
+  if(badge){badge.textContent=total;badge.style.display=total?'inline-flex':'none';}
+  if(!total){
+    el.innerHTML='<div style="color:var(--green-dark);font-size:13px;padding:4px 0">✓ Nothing needs your attention right now.</div>';
+    return;
+  }
+  let html='';
+  if(pending.length){
+    html+=`<div style="font-weight:600;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Pending Approval (${pending.length})</div>`;
+    html+=pending.map(l=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
+        <span class="badge bg-a">${l.supervisor||'Unassigned'}</span>
+        <strong style="font-size:13px">${l.gang}</strong>
+        <span style="font-size:12px;color:var(--muted)">${l.date} · ${l.locations.map(x=>x.l).join(', ')}</span>
+        ${canApprove()?`<button class="btn bp bsm" style="margin-left:auto" onclick="quickApprove('${l.id}')">Approve</button>`:''}
+      </div>`).join('');
+  }
+  if(stuckInProgress.length){
+    html+=`<div style="font-weight:600;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:${pending.length?'16px':0} 0 8px">In Progress for over 24hrs (${stuckInProgress.length})</div>`;
+    html+=stuckInProgress.map(l=>{
+      const hrs=Math.round((now-parseInt(l.id))/3600000);
+      return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
+        <span class="badge bg-b">${l.supervisor||'Unassigned'}</span>
+        <strong style="font-size:13px">${l.gang}</strong>
+        <span style="font-size:12px;color:var(--muted)">${l.date} · ${hrs}hrs ago</span>
+        ${canApprove()?`<button class="btn bs bsm" style="margin-left:auto" onclick="openEdit('${l.id}')">Review</button>`:''}
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML=html;
+}
+
+// ── 3. COVERAGE MAP ────────────────────────────────────────────────────────────
+function renderCoverageMap(){
+  const el=document.getElementById('coverageContent');
+  if(!el)return;
+  const fromEl=document.getElementById('coverageFrom');
+  const toEl=document.getElementById('coverageTo');
+  const supF=document.getElementById('coverageSup').value;
+  if(!fromEl.value||!toEl.value){
+    el.innerHTML='<p style="font-size:12px;color:var(--muted)">Pick a date range above to see which locations your gangs covered and which they missed.</p>';
+    return;
+  }
+  const from=fromEl.value, to=toEl.value;
+  const filtered=logs.filter(l=>{
+    if(l.date<from||l.date>to) return false;
+    if(supF==='__unassigned__'&&l.supervisor) return false;
+    if(supF&&supF!=='__unassigned__'&&l.supervisor!==supF) return false;
+    return true;
+  });
+  const visited=new Set(filtered.flatMap(l=>l.locations.map(x=>x.l)));
+  const total=TX.length;
+  const pct=Math.round(visited.size/total*100);
+
+  // group visited by feeder
+  const byFeeder={};
+  filtered.forEach(l=>l.locations.forEach(x=>{
+    if(!byFeeder[x.f]) byFeeder[x.f]={visited:new Set(),total:0};
+    byFeeder[x.f].visited.add(x.l);
+  }));
+  TX.forEach(t=>{
+    if(!byFeeder[t.f]) byFeeder[t.f]={visited:new Set(),total:0};
+    byFeeder[t.f].total++;
+  });
+
+  const coverageBar=`
+    <div style="margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:600">Network coverage for this period</span>
+        <span style="font-size:20px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:${pct>60?'var(--green)':pct>30?'var(--amber)':'var(--red)'}">${pct}%</span>
+      </div>
+      <div style="height:12px;background:var(--border);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${pct>60?'var(--green)':pct>30?'var(--amber)':'var(--red)'};border-radius:6px;transition:width .5s"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">${visited.size} of ${total} transformer locations visited · ${filtered.length} log entries · ${new Set(filtered.map(l=>l.gang)).size} gangs active</div>
+    </div>`;
+
+  const feederRows=Object.entries(byFeeder)
+    .sort((a,b)=>(b[1].visited.size/b[1].total)-(a[1].visited.size/a[1].total))
+    .map(([feeder,d])=>{
+      const fpct=d.total?Math.round(d.visited.size/d.total*100):0;
+      return`<div class="bar-row">
+        <div class="bar-label" style="display:flex;align-items:center;gap:5px">${fdot(feeder)}${feeder}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${fpct}%;background:${fpct>60?'var(--green)':fpct>30?'var(--amber)':'var(--red)'}"></div></div>
+        <div class="bar-count" style="width:60px;font-size:11px">${d.visited.size}/${d.total}</div>
+      </div>`;
+    }).join('');
+
+  el.innerHTML=coverageBar+`<div class="bar-chart">${feederRows||'<div style="color:var(--muted);font-size:12px">No logs in this date range</div>'}</div>`;
+}
+
+// ── 4. STALE LOCATIONS ─────────────────────────────────────────────────────────
+function renderStaleLocations(){
+  const el=document.getElementById('staleContent');
+  const badge=document.getElementById('staleBadge');
+  if(!el)return;
+  const days=parseInt(document.getElementById('staleDays').value)||30;
+  const cutoff=new Date(Date.now()-days*86400000).toISOString().slice(0,10);
+  const recentlyVisited=new Set(
+    logs.filter(l=>l.date>=cutoff).flatMap(l=>l.locations.map(x=>x.l))
+  );
+  const stale=TX.filter(t=>!recentlyVisited.has(t.l));
+  if(badge) badge.textContent=stale.length+' locations';
+  if(!stale.length){
+    el.innerHTML=`<div style="color:var(--green-dark);font-size:13px;padding:4px 0">✓ Every transformer in the master list has been visited in the last ${days} days.</div>`;
+    return;
+  }
+  // group stale by feeder, show counts and the list
+  const byFeeder={};
+  stale.forEach(t=>{(byFeeder[t.f]=byFeeder[t.f]||[]).push(t.l);});
+  const sorted=Object.entries(byFeeder).sort((a,b)=>b[1].length-a[1].length);
+  el.innerHTML=`
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      These ${stale.length} transformer locations haven't appeared in any field log in the last ${days} days. They should be assigned to the next available gang.
+    </p>
+    ${sorted.map(([feeder,locs])=>`
+      <div style="margin-bottom:14px">
+        <div style="font-weight:600;font-size:12px;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+          ${fdot(feeder)}${feeder} <span class="badge bg-r">${locs.length} stale</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${locs.map(l=>`<span class="chip chip-warn" style="font-size:11px">${l}</span>`).join('')}
+        </div>
+      </div>`).join('')}`;
+}
+
+// ── DETAILS (collapsed bar charts) ────────────────────────────────────────────
+function renderAnalyticsDetails(){
+  const period=document.getElementById('aPeriod')?document.getElementById('aPeriod').value:'30';
+  const supF=document.getElementById('aSup')?document.getElementById('aSup').value:'';
+  const now=Date.now();
+  let data=logs.filter(l=>{
+    if(period!=='all'&&new Date(l.date).getTime()<now-parseInt(period)*86400000)return false;
+    if(supF==='__unassigned__'&&l.supervisor)return false;
+    else if(supF&&supF!=='__unassigned__'&&l.supervisor!==supF)return false;
+    return true;
+  });
+  barChart('cSup',cnt(data,l=>l.supervisor||'Unassigned'));
+  barChart('cGang',cnt(data,l=>l.gang));
+  barChart('cFeeder',cnt(data.flatMap(l=>l.locations),x=>x.f));
+  barChart('cAct',cnt(data,l=>l.activity));
+}
+function cnt(arr,fn){const m={};arr.forEach(x=>{const k=fn(x);if(k)m[k]=(m[k]||0)+1;});return m;}
+function barChart(id,data){
+  const el=document.getElementById(id);if(!el)return;
+  const entries=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  const max=entries[0]?.[1]||1;
+  el.innerHTML=entries.length?entries.map(([k,v])=>`
+    <div class="bar-row">
+      <div class="bar-label" title="${k}">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%"></div></div>
+      <div class="bar-count">${v}</div>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:12px;padding:8px 0">No data for this period</div>';
+}
+
+// ── DAILY PASTE — fuzzy feeder/location matching ──────────────────────────────
+let dpPending=null; // { rows: [{supervisor, gangLabel, staffNames, locRows:[{rawLoc, matches:[{f,l,score}], checked:[bool], useCustom:bool}]}] }
+
+function openDailyPasteModal(){
+  const now=new Date();
+  document.getElementById('dpDate').value=now.toISOString().slice(0,10);
+  document.getElementById('dpTime').value=now.toTimeString().slice(0,5);
+  document.getElementById('dailyPasteModal').style.display='flex';
+}
+function closeDailyPasteModal(e){if(!e||e.target===document.getElementById('dailyPasteModal'))document.getElementById('dailyPasteModal').style.display='none';}
+function closeDpPreview(e){if(!e||e.target===document.getElementById('dpPreviewModal'))document.getElementById('dpPreviewModal').style.display='none';}
+
+function normLoc(s){
+  return s.toUpperCase().replace(/[^\w\s]/g,'').replace(/\s+/g,' ').trim();
+}
+function normLocNoSpace(s){
+  return s.toUpperCase().replace(/[^A-Z0-9]/g,'');
+}
+// classic edit-distance, used as a fallback for spelling variation / typos
+function levenshtein(a,b){
+  const m=a.length, n=b.length;
+  if(m===0) return n;
+  if(n===0) return m;
+  let prev=Array.from({length:n+1},(_, j)=>j);
+  for(let i=1;i<=m;i++){
+    const curr=[i];
+    for(let j=1;j<=n;j++){
+      curr[j]=a[i-1]===b[j-1]
+        ? prev[j-1]
+        : 1+Math.min(prev[j],curr[j-1],prev[j-1]);
+    }
+    prev=curr;
+  }
+  return prev[n];
+}
+function similarityPct(a,b){
+  const maxLen=Math.max(a.length,b.length);
+  if(maxLen===0) return 100;
+  return Math.round((1-levenshtein(a,b)/maxLen)*100);
+}
+// score a candidate transformer entry against a typed-in location string.
+// Layered: exact > prefix/contains > word overlap > fuzzy spelling (Levenshtein,
+// space-insensitive) so things like "Kasunmu" vs "KASUMU" or "Niger West" vs
+// "NIGERWEST" still match confidently despite spacing/spelling differences.
+// words too generic to be a meaningful signal on their own (appear across many
+// unrelated transformer names) — matching on these alone shouldn't outscore
+// a match on a distinctive place name
+const GENERIC_WORDS=new Set(['HVDS','STREET','STR','STRRT','ROAD','RD','CLOSE','LANE','ESTATE','EST','POLE']);
+function scoreMatch(query,candidateLabel){
+  const q=normLoc(query), c=normLoc(candidateLabel);
+  if(!q||!c) return 0;
+  if(q===c) return 100;
+  if(c.startsWith(q)) return 90;
+  if(c.includes(q)) return 80;
+  const qWords=q.split(' ').filter(w=>w.length>1);
+  const cWordsArr=c.split(' ').filter(w=>w.length>1);
+  const cWords=new Set(cWordsArr);
+  let weightedOverlap=0, meaningfulMatches=0;
+  qWords.forEach(w=>{
+    if(cWords.has(w)){
+      if(GENERIC_WORDS.has(w)) weightedOverlap+=3;
+      else { weightedOverlap+=12; meaningfulMatches++; }
+    }
+  });
+  // require at least one *meaningful* (non-generic) word match — overlap on
+  // generic words alone (e.g. just "HVDS") shouldn't be enough to match
+  const wordScore = meaningfulMatches>0 ? 50+weightedOverlap : 0;
+
+  // Whole-string fuzzy: handles spacing/spelling drift when query and
+  // candidate are similar LENGTH (e.g. "Niger West" vs "NIGERWEST").
+  const qNoSpace=normLocNoSpace(query);
+  const wholeFuzzy=similarityPct(qNoSpace, normLocNoSpace(candidateLabel));
+  const wholeFuzzyScore=(qNoSpace.length>=4 && wholeFuzzy>=75)?wholeFuzzy-3:0;
+
+  // Sliding-window fuzzy: handles the case where the query is a short typo'd
+  // name (e.g. "Anuoluwapo") embedded inside a much longer candidate string
+  // (e.g. "ANU OLUWAPO STREET POLE 1") — comparing against the WHOLE candidate
+  // unfairly penalizes the query for words it never claimed to include, so
+  // instead compare against the best-matching 1-3 word window of the candidate.
+  let windowFuzzyScore=0;
+  if(qNoSpace.length>=6 && cWordsArr.length>1){
+    let best=0;
+    for(let winSize=1;winSize<=Math.min(3,cWordsArr.length);winSize++){
+      for(let i=0;i+winSize<=cWordsArr.length;i++){
+        const windowStr=cWordsArr.slice(i,i+winSize).join('');
+        const s=similarityPct(qNoSpace,windowStr);
+        if(s>best) best=s;
+      }
+    }
+    if(best>=82) windowFuzzyScore=best-8; // small penalty vs a full-string match, since it's a partial-name match
+  }
+
+  return Math.max(wordScore, wholeFuzzyScore, windowFuzzyScore);
+}
+function findFeederMatches(query,topN){
+  const scored=TX.map(t=>({score:scoreMatch(query,t.l),f:t.f,l:t.l}))
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score);
+  return scored.slice(0,topN||6);
+}
+// strip a trailing "POLE N" / "POLE N A" suffix to get the root site name
+function locRoot(label){
+  return label.replace(/\s*POLE\s*\d+[A-Z]?\s*$/i,'').trim();
+}
+// Always auto-check ONLY the single best match. If a typed location (e.g.
+// "Ibido") happens to match several poles on the master list, none of the
+// others get auto-ticked — the supervisor/approver must manually tick any
+// additional poles they know were actually visited. This avoids silently
+// over-claiming visits to poles that weren't necessarily worked on.
+function autoExpandMatches(query,matches){
+  if(!matches.length) return [];
+  return matches.map((m,i)=>i===0);
+}
+
+
+
+// "various" (and close variants) means the gang worked broadly across the
+// network rather than at one named spot — this is a real, meaningful answer
+// that should be stored as-is, never silently dropped or treated as a typo.
+const VARIOUS_PATTERN=/^various(\s+locations?)?$/i;
+
+function parseDailyPaste(){
+  const raw=document.getElementById('dpRaw').value.trim();
+  if(!raw){toast('Paste some data first','err');return;}
+  const date=document.getElementById('dpDate').value;
+  const time=document.getElementById('dpTime').value;
+  if(!date){toast('Pick a date for this batch','err');return;}
+
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  let rows=lines.map(l=>l.split('\t'));
+  if(rows.every(r=>r.length===1)) rows=lines.map(l=>l.split(/\s{2,}/));
+  if(rows.length && /supervisor/i.test(rows[0][0]||'')) rows=rows.slice(1);
+
+  const parsed=[];
+  const warnings=[];
+  rows.forEach((cols,rowIdx)=>{
+    // Don't trust column POSITION — a blank Supervisor cell sometimes
+    // collapses entirely when pasted, shifting Gang into column 0 and
+    // Locations into column 1. Instead, find the gang field by its SHAPE:
+    // it's the one cell containing "&" or " and " joining exactly two names.
+    cols=cols.map(c=>(c||'').trim());
+    let gangIdx=cols.findIndex(c=>/&| and /i.test(c) && c.split(/&| and /i).length===2);
+    if(gangIdx===-1){
+      if(cols.join('').length) warnings.push(`Row ${rowIdx+1}: couldn't find a "Name & Name" gang pattern — skipped ("${cols.join(' | ')}")`);
+      return;
+    }
+    const gangField=cols[gangIdx];
+    const supervisor=gangIdx>0?cols[0]:''; // whatever sits before the gang field, blank if gang was first
+    const locField=cols.slice(gangIdx+1).join(' ').trim(); // everything after the gang field, rejoined
+    const staffNames=gangField.split(/&| and /i).map(s=>s.trim()).filter(Boolean);
+    if(staffNames.length<2){
+      warnings.push(`Row ${rowIdx+1}: gang field "${gangField}" didn't split into two names — skipped`);
+      return;
+    }
+    const gangLabel=staffNames.join(' & ');
+
+    const rawLocs=locField
+      ? locField.split(/[,.]| and (?=[A-Za-z])| & (?=various)/i).map(s=>s.trim()).filter(Boolean)
+      : [];
+    const locRows=[];
+    let hasVarious=false;
+    rawLocs.forEach(rawLoc=>{
+      if(VARIOUS_PATTERN.test(rawLoc)){
+        hasVarious=true;
+        return; // handled separately below, not matched against the master list
+      }
+      const matches=findFeederMatches(rawLoc,6);
+      const checked=autoExpandMatches(rawLoc,matches);
+      if(matches.length && !checked.some(Boolean)) checked[0]=true;
+      locRows.push({rawLoc,matches,checked,useCustom:!matches.length});
+    });
+    if(!rawLocs.length) warnings.push(`Row ${rowIdx+1} (${gangLabel}): no locations found in "${locField}"`);
+    parsed.push({supervisor,gangLabel,staffNames,locRows,hasVarious});
+  });
+
+  if(!parsed.length){
+    toast('Could not detect any gang rows — check the format','err');
+    return;
+  }
+  if(warnings.length){
+    toast(warnings.length+' row(s) need a closer look — see preview','warn');
+  }
+
+  dpPending={date,time,rows:parsed,warnings};
+  renderDpPreview();
+  closeDailyPasteModal();
+  document.getElementById('dpPreviewModal').style.display='flex';
+}
+
+function renderDpPreview(){
+  const el=document.getElementById('dpPreviewContent');
+  let html='';
+  let totalTypedLocs=0, totalResolvedLocs=0, needsAttention=0;
+
+  // ensure every row has an activities set
+  dpPending.rows.forEach(row=>{
+    if(!row.activities) row.activities=new Set(['Cash Drive']);
+  });
+
+  if(dpPending.warnings && dpPending.warnings.length){
+    html+=`<div style="background:var(--amber-light);border:1px solid var(--amber);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7A5500">
+      <strong>⚠ ${dpPending.warnings.length} row(s) need a closer look:</strong>
+      <ul style="margin:6px 0 0 18px">${dpPending.warnings.map(w=>`<li>${escapeHtml(w)}</li>`).join('')}</ul>
+    </div>`;
+  }
+
+  dpPending.rows.forEach((row,ri)=>{
+    const existingGang=gangs.find(g=>g.name.toLowerCase()===row.gangLabel.toLowerCase());
+    const feedersInRow=new Set();
+    row.locRows.forEach(lr=>lr.checked.forEach((c,i)=>{if(c)feedersInRow.add(lr.matches[i].f);}));
+    // per-gang activity picker — inline chips, multi-select
+    const actPicker=ACTIVITIES.map(a=>{
+      const on=row.activities.has(a.value);
+      return`<span onclick="dpToggleActivity(${ri},'${a.value}')" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:1.5px solid ${on?'var(--green)':'var(--border)'};background:${on?'var(--green-light)':'#fff'};font-size:11px;font-weight:600;cursor:pointer;margin:2px">${a.label.split(' ')[0]} ${a.value}</span>`;
+    }).join('');
+    html+=`<div style="margin-bottom:18px;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div style="background:var(--bg);padding:8px 12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="badge ${row.supervisor?'bg-a':'bg-gr'}">${row.supervisor||'Unassigned'}</span>
+        ${row.gangLabel}
+        ${!existingGang?'<span class="badge bg-g" style="font-weight:400">new gang</span>':''}
+        ${feedersInRow.size>1?`<span class="badge bg-b" style="font-weight:400">${feedersInRow.size} feeders</span>`:''}
+        ${row.hasVarious?`<span class="badge bg-p" style="font-weight:400">+ various locations</span>`:''}
+      </div>
+      <div style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px">
+        <span style="color:var(--muted);margin-right:6px">Activities:</span>${actPicker}
+      </div>
+      <table class="import-preview-table" style="margin:0">
+        <thead><tr><th style="width:22%">Typed Location</th><th>Matching Transformer(s) — tick all that apply</th></tr></thead>
+        <tbody>`;
+    row.locRows.forEach((lr,li)=>{
+      totalTypedLocs++;
+      const numChecked=lr.checked.filter(Boolean).length;
+      totalResolvedLocs+=Math.max(numChecked,lr.useCustom?1:0);
+      const hasGoodMatch=lr.matches.length && lr.matches[0].score>=80 && numChecked>0;
+      if(!hasGoodMatch) needsAttention++;
+      const rowClass=hasGoodMatch?'':'import-row-exists';
+      html+=`<tr class="${rowClass}">
+        <td style="vertical-align:top;padding-top:10px">${escapeHtml(lr.rawLoc)}${lr.matches.length>1?`<div style="font-size:10px;color:var(--muted);margin-top:2px">${lr.matches.length} possible matches found</div>`:''}</td>
+        <td id="dp-cell-${ri}-${li}">
+          ${renderDpMatchOptions(ri,li,lr)}
+        </td>
+      </tr>`;
+    });
+    if(row.hasVarious){
+      totalResolvedLocs++;
+      html+=`<tr style="background:var(--purple-light)">
+        <td style="vertical-align:top;padding-top:10px"><em>various</em></td>
+        <td style="font-size:12px;color:var(--purple)">
+          ✓ Will be logged as "<strong>Various locations across the network</strong>" — no specific transformer pinned, recorded exactly as written
+        </td>
+      </tr>`;
+    }
+    html+='</tbody></table></div>';
+  });
+
+  if(!dpPending.rows.length){
+    el.innerHTML='<p style="color:var(--muted);font-size:12px">No locations parsed.</p>';
+    return;
+  }
+  el.innerHTML=html;
+  document.getElementById('dpSummary').textContent=
+    `${dpPending.rows.length} gang${dpPending.rows.length!==1?'s':''} · ${totalTypedLocs} typed location${totalTypedLocs!==1?'s':''} → ${totalResolvedLocs} transformer entr${totalResolvedLocs!==1?'ies':'y'}`+
+    (needsAttention?` · ${needsAttention} need review`:' · all matched confidently');
+}
+
+function renderDpMatchOptions(ri,li,lr){
+  let html='<div style="display:flex;flex-direction:column;gap:4px">';
+  lr.matches.forEach((m,mi)=>{
+    const id=`dp-chk-${ri}-${li}-${mi}`;
+    html+=`<label for="${id}" style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:3px 6px;border-radius:4px;${lr.checked[mi]?'background:var(--green-light)':''}">
+      <input type="checkbox" id="${id}" ${lr.checked[mi]?'checked':''} onchange="dpToggleMatch(${ri},${li},${mi},this.checked)" style="width:auto;margin:0">
+      ${fdot(m.f)}<strong>${m.l}</strong> <span style="color:var(--muted)">(${m.f}) — ${m.score}% match</span>
+    </label>`;
+  });
+  const customId=`dp-custom-${ri}-${li}`;
+  html+=`<label for="${customId}" style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:3px 6px;border-radius:4px;${lr.useCustom?'background:var(--amber-light)':''}">
+    <input type="checkbox" id="${customId}" ${lr.useCustom?'checked':''} onchange="dpToggleCustom(${ri},${li},this.checked)" style="width:auto;margin:0">
+    ✏ Keep "<em>${escapeHtml(lr.rawLoc)}</em>" as a custom location too
+  </label>`;
+  html+='</div>';
+  return html;
+}
+
+function dpToggleActivity(ri,value){
+  const row=dpPending.rows[ri];
+  if(!row.activities) row.activities=new Set(['Cash Drive']);
+  if(row.activities.has(value)){
+    if(row.activities.size===1) return; // always keep at least one
+    row.activities.delete(value);
+  }else{
+    row.activities.add(value);
+  }
+  // re-render just this gang's preview card by triggering a full preview refresh
+  renderDpPreview();
+}
+function dpToggleMatch(ri,li,mi,isChecked){
+  dpPending.rows[ri].locRows[li].checked[mi]=isChecked;
+  refreshDpCell(ri,li);
+}
+function dpToggleCustom(ri,li,isChecked){
+  dpPending.rows[ri].locRows[li].useCustom=isChecked;
+  refreshDpCell(ri,li);
+}
+function refreshDpCell(ri,li){
+  const lr=dpPending.rows[ri].locRows[li];
+  document.getElementById(`dp-cell-${ri}-${li}`).innerHTML=renderDpMatchOptions(ri,li,lr);
+  // update the running summary counts without a full re-render
+  const allLr=dpPending.rows.flatMap(r=>r.locRows);
+  const totalTypedLocs=allLr.length;
+  let totalResolvedLocs=0, needsAttention=0;
+  allLr.forEach(x=>{
+    const numChecked=x.checked.filter(Boolean).length;
+    totalResolvedLocs+=numChecked+(x.useCustom?1:0);
+    if(numChecked===0 && !x.useCustom) needsAttention++;
+  });
+  document.getElementById('dpSummary').textContent=
+    `${dpPending.rows.length} gang${dpPending.rows.length!==1?'s':''} · ${totalTypedLocs} typed location${totalTypedLocs!==1?'s':''} → ${totalResolvedLocs} transformer entr${totalResolvedLocs!==1?'ies':'y'}`+
+    (needsAttention?` · ${needsAttention} unresolved`:'');
+}
+
+async function confirmDailyPaste(){
+  if(!dpPending)return;
+  const btn=document.getElementById('confirmDpBtn');
+  btn.disabled=true;btn.textContent='Saving…';
+  syncStart('Saving today\u2019s logs to Google Sheets…');
+
+  let added=0, skipped=0, errors=0;
+
+  for(const row of dpPending.rows){
+    // ensure staff exist — push any new names to the Sheet
+    for(const name of row.staffNames){
+      if(!staff.find(s=>s.name.toLowerCase()===name.toLowerCase())){
+        const id='s'+Date.now()+Math.random().toString(36).slice(2,6);
+        const role='Linesman';
+        try{
+          const r=await apiPost({action:'saveStaff',id,name,role});
+          if(r.success) staff.push({id,name,role});
+        }catch(e){/* if this fails, gang creation below will skip the name */}
+      }
+    }
+    // ensure gang exists — push to the Sheet if it's new
+    let gangObj=gangs.find(g=>g.name.toLowerCase()===row.gangLabel.toLowerCase());
+    if(!gangObj){
+      const staffIds=row.staffNames.map(n=>{
+        const found=staff.find(s=>s.name.toLowerCase()===n.toLowerCase());
+        return found?found.id:null;
+      }).filter(Boolean);
+      if(staffIds.length>=2){
+        const id='g'+Date.now()+Math.random().toString(36).slice(2,6);
+        const candidate={id,name:row.gangLabel,supervisor:row.supervisor,staffIds,homeLocations:[]};
+        try{
+          const r=await apiPost({action:'saveGang',id,name:row.gangLabel,supervisor:row.supervisor,staffIds:staffIds.join('|'),homeLocations:''});
+          if(r.success){gangs.push(candidate);gangObj=candidate;}
+        }catch(e){/* gangObj stays undefined; this row's locations get skipped below */}
+      }
+    }
+    if(!gangObj){skipped++;continue;}
+
+    const locations=[];
+    row.locRows.forEach(lr=>{
+      lr.matches.forEach((m,mi)=>{
+        if(lr.checked[mi]) locations.push({l:m.l,f:m.f});
+      });
+      if(lr.useCustom) locations.push({l:lr.rawLoc,f:'Custom'});
+    });
+    // "various" means the gang worked broadly across the network rather than
+    // at one named spot — stored exactly as that, no question asked, never
+    // dropped just because it doesn't match a specific transformer name
+    if(row.hasVarious) locations.push({l:'Various locations across the network',f:'Various'});
+    if(!locations.length){skipped++;continue;}
+
+    const staffNamesForLog=gangObj.staffIds.map(staffName);
+    const submittedBySupervisor=currentRole&&currentRole.startsWith('sup_');
+    const entry={
+      id:Date.now()+''+Math.random().toString(36).slice(2,5),
+      date:dpPending.date,time:dpPending.time,
+      supervisor:row.supervisor,
+      gang:gangObj.name,gangId:gangObj.id,
+      linesman:staffNamesForLog[0]||'',linesmate:staffNamesForLog[1]||'',
+      locations,
+      activity:[...(row.activities||new Set(['Cash Drive']))].join(' + '),
+      status:'In Progress',
+      notes:'Logged via Daily Paste',
+      approvalStatus:submittedBySupervisor?'Pending':'Approved',
+      approvedBy:''
+    };
+
+    try{
+      const result=await apiPost({
+        action:'save',...entry,
+        locations:entry.locations.map(x=>x.l).join(' | '),
+        feeders:entry.locations.map(x=>x.f).join(' | ')
+      });
+      if(result.success){logs.unshift(entry);added++;}
+      else errors++;
+    }catch(e){errors++;}
+  }
+
+  syncEnd();
+  populateGangDropdown();renderGangGrid();renderOrgTree();renderStaffList();updateStats();renderTodayList();renderRecords();
+
+  document.getElementById('dpPreviewModal').style.display='none';
+  document.getElementById('dpRaw').value='';
+  btn.disabled=false;btn.textContent='✓ Confirm & Save All';
+  dpPending=null;
+
+  toast(`Daily paste complete: ${added} log(s) saved${errors?', '+errors+' error(s)':''} ✓`);
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportCSV(){
+  if(!logs.length){toast('No logs to export','warn');return;}
+  const rows=[['Date','Time','Supervisor','Gang','Linesman','Linesmate','Locations','Feeders','Activity','Status','Notes']];
+  logs.forEach(l=>{
+    rows.push([l.date,l.time,l.supervisor||'',l.gang,l.linesman||'',l.linesmate||'',
+      l.locations.map(x=>x.l).join(' | '),[...new Set(l.locations.map(x=>x.f))].join(' | '),
+      l.activity,l.status,l.notes||'']);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='IE_FieldLogs_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV exported ✓');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+// ── APPROVALS ─────────────────────────────────────────────────────────────────
+function updatePendingBadge(){
+  const pending=logs.filter(l=>l.approvalStatus==='Pending');
+  const badge=document.getElementById('pendingCountBadge');
+  if(!badge)return;
+  if(pending.length){badge.textContent=pending.length;badge.style.display='inline-flex';}
+  else badge.style.display='none';
+}
+
+function renderApprovals(){
+  const el=document.getElementById('approvalsList');
+  if(!el)return;
+  const pending=logs.filter(l=>l.approvalStatus==='Pending');
+  updatePendingBadge();
+  if(!pending.length){
+    el.innerHTML='<div class="empty-state"><div class="ei">✅</div><div class="et">Nothing pending</div><div class="es">All supervisor submissions have been reviewed</div></div>';
+    return;
+  }
+  el.innerHTML=pending.map(l=>`
+    <div class="log-item" style="border-left:3px solid var(--amber)">
+      <div class="log-meta">
+        <span class="badge bg-a">${l.supervisor||'Unassigned'}</span>
+        <strong>${l.gang||'—'}</strong>
+        <span class="mono" style="font-size:11px;color:var(--muted)">${l.date} ${l.time}</span>
+        <span class="badge bg-gr">${l.activity}</span>
+        <span class="badge ${sc(l.status)}">${l.status}</span>
+        <span class="badge bg-a">⏳ Pending</span>
+      </div>
+      <div class="log-locs">${l.locations.map(x=>`<span class="chip" style="font-size:11px">${fdot(x.f)}${x.l}</span>`).join('')}</div>
+      ${l.notes?`<div style="font-size:12px;color:var(--muted);margin-top:5px">${l.notes}</div>`:''}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn bp bsm" onclick="quickApprove('${l.id}')">✓ Approve as-is</button>
+        <button class="btn bs bsm" onclick="openApproveEditModal('${l.id}')">✏ Review & Edit</button>
+        <button class="btn bd bsm" onclick="rejectEntry('${l.id}')">✕ Reject</button>
+      </div>
+    </div>`).join('');
+}
+
+function authParams(){
+  return{authRole:currentRole,authPassword:verifiedPasswords[currentRole]||''};
+}
+
+async function quickApprove(id){
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  syncStart('Approving…');
+  try{
+    const r=await apiPost({action:'approveUpdate',id,approvalStatus:'Approved',approvedBy:approverLabel(),...authParams()});
+    if(r.success){
+      l.approvalStatus='Approved';l.approvedBy=approverLabel();
+      renderApprovals();renderRecords();renderSummary();updatePendingBadge();
+      toast('Entry approved ✓');
+    }else toast(r.error||'Approval failed — your session may have expired, please re-select your role','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+async function rejectEntry(id){
+  if(!confirm('Reject and delete this entry? The supervisor will need to resubmit it.'))return;
+  syncStart('Rejecting…');
+  try{
+    const r=await apiPost({action:'reject',id,...authParams()});
+    if(r.success){
+      logs=logs.filter(l=>l.id!==id);
+      renderApprovals();renderRecords();renderSummary();updateStats();updatePendingBadge();
+      toast('Entry rejected and removed');
+    }else toast(r.error||'Reject failed — your session may have expired, please re-select your role','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+function openApproveEditModal(id){
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  document.getElementById('apvId').value=id;
+  document.getElementById('apvSupervisor').value=l.supervisor||'';
+  document.getElementById('apvGang').value=l.gang||'';
+  document.getElementById('apvActivity').value=l.activity;
+  document.getElementById('apvStatus').value=l.status;
+  document.getElementById('apvLocations').value=l.locations.map(x=>x.l).join(', ');
+  document.getElementById('apvNotes').value=l.notes||'';
+  document.getElementById('approveEditModal').style.display='flex';
+}
+function closeApproveEditModal(e){
+  if(!e||e.target===document.getElementById('approveEditModal'))
+    document.getElementById('approveEditModal').style.display='none';
+}
+
+function buildApprovalChanges(l){
+  // diff the modal fields against the original entry to build a human-readable change note
+  const newSup=document.getElementById('apvSupervisor').value.trim();
+  const newActivity=document.getElementById('apvActivity').value;
+  const newStatus=document.getElementById('apvStatus').value;
+  const newLocsRaw=document.getElementById('apvLocations').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const newNotes=document.getElementById('apvNotes').value.trim();
+
+  const changes=[];
+  if(newSup!==(l.supervisor||'')) changes.push(`Supervisor: "${l.supervisor||'(none)'}" → "${newSup||'(none)'}"`);
+  if(newActivity!==l.activity) changes.push(`Activity: "${l.activity}" → "${newActivity}"`);
+  if(newStatus!==l.status) changes.push(`Status: "${l.status}" → "${newStatus}"`);
+  const oldLocsStr=l.locations.map(x=>x.l).join(', ');
+  const newLocsStr=newLocsRaw.join(', ');
+  if(oldLocsStr!==newLocsStr) changes.push(`Locations: "${oldLocsStr}" → "${newLocsStr}"`);
+  if(newNotes!==(l.notes||'')) changes.push(`Notes updated by approver`);
+
+  return{newSup,newActivity,newStatus,newLocsRaw,newNotes,changes};
+}
+
+async function saveApprovalEdits(){
+  const id=document.getElementById('apvId').value;
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  const{newSup,newActivity,newStatus,newLocsRaw,newNotes,changes}=buildApprovalChanges(l);
+
+  // re-map edited location names against the master list to keep feeder tags sensible
+  const newLocations=newLocsRaw.map(name=>{
+    const existing=l.locations.find(x=>x.l.toLowerCase()===name.toLowerCase());
+    if(existing) return existing;
+    const matches=findFeederMatches(name,1);
+    return matches.length?{l:matches[0].l,f:matches[0].f}:{l:name,f:'Custom'};
+  });
+
+  const changeNote=changes.length
+    ? `[Edited by ${approverLabel()}: ${changes.join('; ')}]`
+    : '';
+  const combinedNotes=(newNotes+(changeNote?' '+changeNote:'')).trim();
+
+  syncStart('Saving changes…');
+  try{
+    const r=await apiPost({
+      action:'approveUpdate',id,
+      supervisor:newSup,activity:newActivity,status:newStatus,
+      notes:combinedNotes,
+      locations:newLocations.map(x=>x.l).join(' | '),
+      feeders:newLocations.map(x=>x.f).join(' | '),
+      ...authParams()
+    });
+    if(r.success){
+      l.supervisor=newSup;l.activity=newActivity;l.status=newStatus;
+      l.locations=newLocations;l.notes=combinedNotes;
+      document.getElementById('approveEditModal').style.display='none';
+      renderApprovals();renderRecords();renderSummary();
+      toast('Changes saved — still pending approval');
+    }else toast(r.error||'Save failed','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+async function approveFromModal(){
+  const id=document.getElementById('apvId').value;
+  const l=logs.find(x=>x.id===id);if(!l)return;
+  const{newSup,newActivity,newStatus,newLocsRaw,newNotes,changes}=buildApprovalChanges(l);
+
+  const newLocations=newLocsRaw.map(name=>{
+    const existing=l.locations.find(x=>x.l.toLowerCase()===name.toLowerCase());
+    if(existing) return existing;
+    const matches=findFeederMatches(name,1);
+    return matches.length?{l:matches[0].l,f:matches[0].f}:{l:name,f:'Custom'};
+  });
+
+  const changeNote=changes.length
+    ? `[Approved with edits by ${approverLabel()}: ${changes.join('; ')}]`
+    : `[Approved by ${approverLabel()}]`;
+  const combinedNotes=(newNotes+' '+changeNote).trim();
+
+  syncStart('Approving…');
+  try{
+    const r=await apiPost({
+      action:'approveUpdate',id,
+      supervisor:newSup,activity:newActivity,status:newStatus,
+      notes:combinedNotes,
+      locations:newLocations.map(x=>x.l).join(' | '),
+      feeders:newLocations.map(x=>x.f).join(' | '),
+      approvalStatus:'Approved',approvedBy:approverLabel(),
+      ...authParams()
+    });
+    if(r.success){
+      l.supervisor=newSup;l.activity=newActivity;l.status=newStatus;
+      l.locations=newLocations;l.notes=combinedNotes;
+      l.approvalStatus='Approved';l.approvedBy=approverLabel();
+      document.getElementById('approveEditModal').style.display='none';
+      renderApprovals();renderRecords();renderSummary();updatePendingBadge();
+      toast('Entry approved ✓');
+    }else toast(r.error||'Approval failed','err');
+  }catch(e){toast('Network error','err');}
+  syncEnd();
+}
+
+function sc(s){return{Completed:'bg-g','In Progress':'bg-b',Pending:'bg-a',Escalated:'bg-r'}[s]||'bg-gr';}
+function getRoleSup(){return currentRole&&currentRole.startsWith('sup_')?currentRole.replace('sup_',''):'';}
+let toastT;
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=type;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
